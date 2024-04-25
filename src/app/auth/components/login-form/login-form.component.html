@@ -1,0 +1,134 @@
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 bg-secondary-50 w-full">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col justify-center items-center">
+    <svg
+      viewBox="0 0 24 24"
+      role="img"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-labelledby="signalIconTitle"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+      class="size-16 stroke-gray-900"
+    >
+      <g
+        id="SVGRepo_bgCarrier"
+        stroke-width="0"
+      ></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        <title id="signalIconTitle">Signal</title>
+        <line
+          stroke-linecap="round"
+          x1="12"
+          y1="13"
+          x2="12"
+          y2="13"
+        ></line>
+        <path
+          d="M20.1818182,19 C21.4049942,17.3756933 22,15.4354435 22,13.3529412 C22,7.63445279 17.5228475,3 12,3 C6.4771525,3 2,7.63445279 2,13.3529412 C2,15.4051946 2.57785915,17.3193409 3.81818182,19"
+        ></path>
+        <path
+          d="M16,16 C16.7024971,15.1878466 17,14.2177217 17,13 C17,10.3172264 14.7614237,8 12,8 C9.23857625,8 7,10.3172264 7,13 C7,14.2025973 7.28892957,15.1596705 8,16"
+        ></path>
+      </g>
+    </svg>
+    <h2 class="mt-5 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to your account</h2>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <form
+      class="space-y-6"
+      [formGroup]="signInForm"
+      (ngSubmit)="onSubmit()"
+    >
+      <div>
+        <label
+          for="email"
+          class="block text-sm font-medium leading-6 text-gray-900"
+          >Email address</label
+        >
+        <div class="mt-2">
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            formControlName="email"
+            class="bg-white block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+          />
+        </div>
+      </div>
+
+      <div>
+        @if (stage === "wait_submit" || stage === "sent") {
+        <button
+          type="submit"
+          (click)="onSubmit()"
+          [ngClass]="stage === 'wait_submit' ? ' cursor-pointer bg-primary-600 hover:bg-primary-700' : 'cursor-wait bg-primary-100'"
+          class="flex w-full justify-center rounded-md px-3 py-2 leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all"
+        >
+          @if (stage === "wait_submit") {
+          <div class="text-white text-sm font-semibold">Send magic link</div>
+          } @else if (stage === "sent") {
+          <div class="flex flex-row gap-2">
+            <div class="size-2 rounded-full bg-primary-600 animate-bounce"></div>
+            <div class="size-2 rounded-full bg-primary-600 animate-bounce [animation-delay:-.3s]"></div>
+            <div class="size-2 rounded-full bg-primary-600 animate-bounce [animation-delay:-.5s]"></div>
+          </div>
+          }
+        </button>
+        } @else if (stage === "success") {
+        <div class="rounded-md bg-green-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg
+                class="h-5 w-5 text-green-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-green-800">Sent! Check your inbox</p>
+            </div>
+          </div>
+        </div>
+        } @else {
+        <div class="rounded-md bg-red-50 p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg
+                class="h-5 w-5 text-red-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">{{ signupError }}</h3>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </form>
+  </div>
+</div>
