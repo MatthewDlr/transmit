@@ -21,6 +21,7 @@ export const routes: Routes = [
   {
     path: "account",
     loadComponent: () => import("./core/account/components/account-page/account-page.component").then((m) => m.AccountPageComponent),
+    canActivate: [isLoggedIn],
   },
   {
     path: "**",
