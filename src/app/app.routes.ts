@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { isNotLoggedInGuard } from "./auth/guards/is-not-logged-in.guard";
+import { isLoggedIn } from "./auth/guards/is-logged-in.guard";
 
 export const routes: Routes = [
   {
@@ -9,18 +10,20 @@ export const routes: Routes = [
   },
   {
     path: "feed",
-    loadComponent: () => import("./core/feed/components/feed-page/feed-page.component").then((m) => m.FeedPageComponent)
+    loadComponent: () => import("./core/feed/components/feed-page/feed-page.component").then((m) => m.FeedPageComponent),
+    canActivate: [isLoggedIn],
   },
   {
     path: "explore",
-    loadComponent: () => import("./core/explore/components/explore-page/explore-page.component").then((m) => m.ExplorePageComponent)
+    loadComponent: () => import("./core/explore/components/explore-page/explore-page.component").then((m) => m.ExplorePageComponent),
+    canActivate: [isLoggedIn],
   },
   {
     path: "account",
-    loadComponent: () => import("./core/account/components/account-page/account-page.component").then((m) => m.AccountPageComponent)
+    loadComponent: () => import("./core/account/components/account-page/account-page.component").then((m) => m.AccountPageComponent),
   },
   {
     path: "**",
-    loadComponent: () => import("./auth/components/login-form/login-form.component").then((m) => m.LoginFormComponent),
+    redirectTo: "feed",
   },
 ];

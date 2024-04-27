@@ -1,6 +1,7 @@
-import { Injectable, WritableSignal, signal } from "@angular/core";
-import { AuthChangeEvent, AuthOtpResponse, AuthSession, createClient, Session, User } from "@supabase/supabase-js";
+import { Injectable, Signal, WritableSignal, computed, signal } from "@angular/core";
+import { AuthChangeEvent, AuthOtpResponse, AuthSession, Session, User } from "@supabase/supabase-js";
 import { SupabaseService } from "../../shared/services/supabase/supabase.service";
+import { BehaviorSubject, Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -8,11 +9,18 @@ import { SupabaseService } from "../../shared/services/supabase/supabase.service
 export class AuthService {
   private supabase = this.supabaseService.client;
   public userSession: WritableSignal<AuthSession | null> = signal(null);
+  public isLoggedIn: Signal<boolean> = computed(() => {
+    if (this.userSession()) return true;
+    return false;
+  });
+  public isLoading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(private supabaseService: SupabaseService) {
+    this.isLoading.next(true);
     this.supabase.auth.getSession().then((response) => {
       this.userSession.set(response.data.session || null);
       console.log("userSession:", this.userSession());
+      this.isLoading.next(false);
     });
   }
 

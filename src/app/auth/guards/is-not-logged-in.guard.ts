@@ -7,7 +7,6 @@ export const isNotLoggedInGuard: CanActivateFn = async (route, state) => {
   const router = inject(Router);
 
   if (auth.userSession()) {
-    router.navigate(["/discover"]);
     return false;
   }
   return true;

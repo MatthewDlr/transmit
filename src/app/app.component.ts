@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { RouterOutlet } from "@angular/router";
+import { Router, RouterOutlet } from "@angular/router";
 import { AuthService } from "./auth/services/auth.service";
 import { SupabaseService } from "./shared/services/supabase/supabase.service";
 import { HeaderComponent } from "./shared/components/header/header.component";
@@ -15,5 +15,5 @@ import { HeaderComponent } from "./shared/components/header/header.component";
 export class AppComponent {
   title = "transmit";
 
-  constructor(private auth: AuthService, private supabase: SupabaseService) {}
+  constructor(private auth: AuthService, private supabase: SupabaseService, public router: Router) {}
 }
