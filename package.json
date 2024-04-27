@@ -40,5 +40,10 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "typescript": "~5.2.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@supabase/supabase-js>@supabase/gotrue-js": "2.61.0"
+    }
   }
 }

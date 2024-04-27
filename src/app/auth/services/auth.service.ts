@@ -1,34 +1,36 @@
-import { Injectable } from "@angular/core";
-import { AuthChangeEvent, AuthSession, createClient, Session, SupabaseClient, User } from "@supabase/supabase-js";
-import { environment } from "../environment/environment";
+import { Injectable, WritableSignal, signal } from "@angular/core";
+import { AuthChangeEvent, AuthOtpResponse, AuthSession, createClient, Session, User } from "@supabase/supabase-js";
+import { SupabaseService } from "../../shared/services/supabase/supabase.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  private supabase: SupabaseClient;
-  userSession: AuthSession | null = null;
+  private supabase = this.supabaseService.client;
+  public userSession: WritableSignal<AuthSession | null> = signal(null);
 
-  constructor() {
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseKey);
+  constructor(private supabaseService: SupabaseService) {
+    this.supabase.auth.getSession().then((response) => {
+      this.userSession.set(response.data.session || null);
+      console.log("userSession:", this.userSession());
+    });
   }
 
-  get session() {
-    this.supabase.auth.getSession().then(({ data }) => {
-      this.userSession = data.session;
-    });
-    return this.userSession;
+  public signIn(email: string): Promise<AuthOtpResponse> {
+    return this.supabase.auth.signInWithOtp({ email });
+  }
+
+  public signOut() {
+    return this.supabase.auth.signOut();
+  }
+
+  public getUser(): User {
+    const user = this.userSession()?.user;
+    if (!user) throw Error("User is not connected or undefined");
+    return user;
   }
 
   authChanges(callback: (event: AuthChangeEvent, session: Session | null) => void) {
     return this.supabase.auth.onAuthStateChange(callback);
-  }
-
-  signIn(email: string) {
-    return this.supabase.auth.signInWithOtp({ email });
-  }
-
-  signOut() {
-    return this.supabase.auth.signOut();
   }
 }

@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@supabase/supabase-js>@supabase/gotrue-js': 2.61.0
+
 dependencies:
   '@angular/animations':
     specifier: ^17.0.0
