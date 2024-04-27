@@ -9,12 +9,12 @@ import { UserProfile } from "../../types/Profile.type";
 })
 export class UserProfileService {
   private supabase = this.supabaseService.client;
-  user!: User;
+  user: User | undefined ;
   userProfile!: WritableSignal<UserProfile>;
 
   constructor(private auth: AuthService, private supabaseService: SupabaseService) {
     effect(() => {
-      this.user = this.auth.getUser();
+      this.user = this.auth.userSession()?.user
     });
     this.getProfile().then((profile) => {
       this.userProfile.set(profile);
@@ -22,7 +22,7 @@ export class UserProfileService {
   }
 
   public async getProfile(): Promise<UserProfile> {
-    const { data, error } = await this.supabase.from("profiles").select("id, username, avatar_url").eq("id", this.user.id).single();
+    const { data, error } = await this.supabase.from("profiles").select("id, username, avatar_url").eq("id", this.user?.id).single();
     if (error) throw error;
     if (!data) throw new Error("No data returned");
 
@@ -30,7 +30,7 @@ export class UserProfileService {
   }
 
   public async update(updatedProfile: UserProfile): Promise<void> {
-    const result = await this.supabase.from("profiles").upsert([{ ...updatedProfile, id: this.user.id }]);
+    const result = await this.supabase.from("profiles").upsert([{ ...updatedProfile, id: this.user?.id }]);
     if (result.error) {
       throw new Error(result.error.message);
     }

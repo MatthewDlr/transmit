@@ -3,11 +3,12 @@ import { CommonModule } from "@angular/common";
 import { RouterOutlet } from "@angular/router";
 import { AuthService } from "./auth/services/auth.service";
 import { SupabaseService } from "./shared/services/supabase/supabase.service";
+import { HeaderComponent } from "./shared/components/header/header.component";
 
 @Component({
   selector: "app-root",
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, HeaderComponent],
   templateUrl: "./app.component.html",
   styleUrl: "./app.component.scss",
 })

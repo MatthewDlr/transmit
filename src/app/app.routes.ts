@@ -5,7 +5,19 @@ export const routes: Routes = [
   {
     path: "login",
     loadComponent: () => import("./auth/components/login-form/login-form.component").then((m) => m.LoginFormComponent),
-    canActivate: [isNotLoggedInGuard]
+    canActivate: [isNotLoggedInGuard],
+  },
+  {
+    path: "feed",
+    loadComponent: () => import("./core/feed/components/feed-page/feed-page.component").then((m) => m.FeedPageComponent)
+  },
+  {
+    path: "explore",
+    loadComponent: () => import("./core/explore/components/explore-page/explore-page.component").then((m) => m.ExplorePageComponent)
+  },
+  {
+    path: "account",
+    loadComponent: () => import("./core/account/components/account-page/account-page.component").then((m) => m.AccountPageComponent)
   },
   {
     path: "**",
