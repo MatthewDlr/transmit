@@ -1,8 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, effect } from "@angular/core";
 import { Router } from "@angular/router";
-import { AuthService } from "../../../auth/services/auth.service";
-import { User } from "@supabase/supabase-js";
 
 @Component({
   selector: "app-header",
