@@ -15,7 +15,7 @@ export const routes: Routes = [
   },
   {
     path: "explore",
-    loadComponent: () => import("./core/explore/components/explore-page/explore-page.component").then((m) => m.ExplorePageComponent),
+    loadComponent: () => import("./core/explore/explore-page.component").then((m) => m.ExplorePageComponent),
     canActivate: [isLoggedIn],
   },
   {
