@@ -12,11 +12,7 @@ import { User } from "@supabase/supabase-js";
   styleUrl: "./header.component.css",
 })
 export class HeaderComponent {
-  isLoggedIn: boolean = true;
 
-  constructor(public router: Router, private auth: AuthService) {
-    effect(() => {
-      this.isLoggedIn = this.auth.isLoggedIn()
-    });
+  constructor(public router: Router) {
   }
 }

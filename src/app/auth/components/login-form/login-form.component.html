@@ -69,7 +69,6 @@
         @if (stage === "wait_submit" || stage === "sent") {
         <button
           type="submit"
-          (click)="onSubmit()"
           [ngClass]="stage === 'wait_submit' ? ' cursor-pointer bg-primary-600 hover:bg-primary-700' : 'cursor-wait bg-primary-100'"
           class="flex w-full justify-center rounded-md px-3 py-2 leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all"
         >
@@ -84,11 +83,11 @@
           }
         </button>
         } @else if (stage === "success") {
-        <div class="rounded-md bg-green-50 p-4">
+        <div class="rounded-md bg-secondary-100 p-4 border border-secondary-200">
           <div class="flex">
             <div class="flex-shrink-0">
               <svg
-                class="h-5 w-5 text-green-400"
+                class="h-5 w-5 text-secondary-900"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
@@ -101,7 +100,7 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-green-800">Sent! Check your inbox</p>
+              <p class="text-sm font-medium text-secondary-900">Sent! Check your inbox</p>
             </div>
           </div>
         </div>

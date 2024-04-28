@@ -1,0 +1,30 @@
+<div class="flex w-full min-w-1 items-center gap-3 border-secondary-200 border bg-secondary-100 rounded-md p-4">
+  <div class="flex flex-col w-full items-start text-secondary-900">
+    <h3 class="font-medium text-base w-fit">Sign out your account</h3>
+    <p class="text-sm font-light w-fit text-pretty">Terminate your session now. You will need to log in again</p>
+  </div>
+  <div class="flex w-fit items-center">
+    <button
+      type="button"
+      (click)="onSignOut()"
+      class="inline-flex items-center gap-x-1.5 rounded-md bg-secondary-900 px-3 py-2.5 font-semibold text-white shadow-sm hover:bg-secondary-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-900 whitespace-nowrap transition-all active:scale-95"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        class="size-6 mr-1"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"
+        />
+      </svg>
+
+      Sign out
+    </button>
+  </div>
+</div>

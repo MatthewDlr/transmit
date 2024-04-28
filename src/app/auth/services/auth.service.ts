@@ -29,7 +29,8 @@ export class AuthService {
   }
 
   public signOut() {
-    return this.supabase.auth.signOut();
+    this.supabase.auth.signOut();
+    this.userSession.set(null);
   }
 
   public getUser(): User {
