@@ -1,13 +1,14 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Post } from '../../../../shared/types/Post.type';
-import {NgIf} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-post',
   standalone: true,
   templateUrl: './post.component.html',
   imports: [
-    NgIf
+    NgIf,
+    DatePipe
   ],
   styleUrls: ['./post.component.css']
 })

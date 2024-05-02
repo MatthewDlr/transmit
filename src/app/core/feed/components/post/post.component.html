@@ -1,7 +1,10 @@
-<div>
-  <h2>Post</h2>
-  <h2>{{ post.content }}</h2>
-  <p>{{ post.timestamp }}</p>
-  <p>{{ post.author }}</p>
+<div style="background-color: #f2f2f2; border-radius: 15px; padding: 15px; margin: 15px; max-width: 600px">
   <img *ngIf="post.image" [src]="post.image" alt="Post image">
+  <h2>{{ post.content }}</h2>
+  <hr style="margin: 5px">
+  <div style="display: flex; align-items: start;">
+    <p class="timestamp" style="margin-right: 10px;">{{ post.timestamp | date: 'dd/MM/yyyy, H:mm' }}</p>
+    <p class="author" style="margin: 0;">&#64;{{ post.author }}</p>
+  </div>
+
 </div>
