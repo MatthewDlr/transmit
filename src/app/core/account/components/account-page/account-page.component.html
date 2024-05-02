@@ -119,6 +119,21 @@
         />
       </div>
     </div>
+
+    <div class="flex flex-col gap-1">
+      <h3 class="text-secondary-900 font-semibold">Interests</h3>
+      <div class="flex gap-2 w-full flex-wrap">
+        @for (interest of interests.values(); track $index) {
+        <button
+          (click)="toggleInterest(interest)"
+          class="px-2 py-1 rounded-full border-secondary-900 border text-sm whitespace-nowrap transition-all"
+          [ngClass]="interest.followed ? 'bg-secondary-900 text-white hover:bg-opacity-80' : 'text-secondary-900 hover:bg-secondary-200'"
+        >
+          {{ interest.name }}
+        </button>
+        }
+      </div>
+    </div>
     }
   </div>
 </div>
