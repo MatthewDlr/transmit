@@ -1,0 +1,7 @@
+<div>
+  <h2>Post</h2>
+  <h2>{{ post.content }}</h2>
+  <p>{{ post.timestamp }}</p>
+  <p>{{ post.author }}</p>
+  <img *ngIf="post.image" [src]="post.image" alt="Post image">
+</div>
