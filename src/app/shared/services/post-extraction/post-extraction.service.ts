@@ -37,7 +37,7 @@ export class PostListService {
       content: item.content,
       timestamp: new Date(item.created_at),
       author: `${item.profiles.name} ${item.profiles.last_name}`,
-      image: item.picture_url,
+      image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
     }));
 
     return posts;
