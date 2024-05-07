@@ -14,4 +14,31 @@ export class SupabaseService {
 
     this.client = createClient(supabaseUrl, supabaseKey);
   }
+
+  // Disable the email auth before, if not you will be instantly timed out
+  private async createFakeUsers() {
+    for (let i = 0; i < 100; i++) {
+      console.log(`Creating fake user ${i}...`);
+      const { data, error } = await this.client.auth.signUp({
+        email: `fake-user-${i}@supabase.com`,
+        password: this.generateRandomString(10),
+      });
+      if (error) {
+        console.error(`Error creating fake user ${i}:`, error);
+        break;
+      } else {
+        console.log(`Fake user ${i} created:`, data);
+        await this.client.auth.signOut();
+      }
+    }
+  }
+
+  private generateRandomString(length: number): string {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  }
 }
