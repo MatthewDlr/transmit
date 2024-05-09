@@ -17,14 +17,14 @@ export class FoafService {
     this.getFriendsOfFriends(this.userID);
   }
 
-  public async getFriendsOfFriends(userID: string) {
+  private async getFriendsOfFriends(userID: string) {
     const friends = await this.getFriendsOf(userID);
     friends.forEach((friend) => {
       this.getFriendsOf(friend.id);
     });
   }
 
-  public async getFriendsOf(userID: string): Promise<GraphUser[]> {
+  private async getFriendsOf(userID: string): Promise<GraphUser[]> {
     if (this.networkUsers.hasUser(userID)) {
       console.info("Friends of", userID, "were already in the map!");
       return this.networkUsers.getFriendsOf(userID);
