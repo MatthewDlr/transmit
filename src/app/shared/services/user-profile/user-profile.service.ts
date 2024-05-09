@@ -10,7 +10,7 @@ import { Interest } from "../../types/Interest.type";
 })
 export class UserProfileService {
   private supabase = this.supabaseService.client;
-  user: User | undefined;
+  private user: User | undefined;
   userProfile: WritableSignal<UserProfile | null> = signal(null);
   interests: WritableSignal<Map<number, Interest>> = signal(new Map());
 
@@ -27,6 +27,12 @@ export class UserProfileService {
         this.interests.set(new Map(interests.map((interest) => [interest.id, interest])));
       });
     });
+  }
+
+  public getUserID(): string {
+    if (!this.user) throw Error("User is not connected");
+
+    return this.user.id;
   }
 
   public async getProfile(): Promise<UserProfile> {
