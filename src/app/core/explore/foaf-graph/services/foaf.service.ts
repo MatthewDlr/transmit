@@ -14,10 +14,19 @@ export class FoafService {
   networkUsers: AdjacencyFriendsList = new AdjacencyFriendsList();
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
-    this.getFriendsOf(this.userID);
+    this.getFriendsOf(this.userID).then((friends) => {
+      friends.forEach((friend) => {
+        this.getFriendsOf(friend.id);
+      });
+    });
   }
 
   public async getFriendsOf(userID: string): Promise<Friend[]> {
+    if (this.networkUsers.hasUser(userID)) {
+      console.info("Friends of", userID, "were already in the map!");
+      return this.networkUsers.getFriendsOf(userID);
+    }
+
     let { data: friendsProfile, error } = await this.supabase
       .from("following")
       .select("profiles:followed_user_id (name, last_name, id)")
@@ -27,7 +36,7 @@ export class FoafService {
     const friends: Friend[] = friendsProfile ? friendsProfile.map((friend) => friend.profiles).flat() : [];
 
     this.networkUsers.addFriends(userID, friends);
-    console.log(this.networkUsers);
+    console.log(this.networkUsers.getUsers());
     return friends;
   }
 }
