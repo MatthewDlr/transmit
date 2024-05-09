@@ -1,38 +1,28 @@
-import { Friend } from "./Friend.type";
+import { GraphUser } from "./GraphUser.type";
 
 export class AdjacencyFriendsList {
-  private users: Map<string, Set<Friend>>;
+  private users: Map<string, Set<GraphUser>>;
 
   constructor() {
     this.users = new Map();
   }
 
-  addUserId(id: string) {
+  addUser(id: string) {
     if (this.users.has(id)) return;
     this.users.set(id, new Set());
   }
 
-  addFriend(id: string, friend: Friend) {
-    const userFriends = this.users.get(id);
-    if (userFriends) {
-      userFriends.add(friend);
-    } else {
-      this.addUserId(id);
-      this.addFriend(id, friend);
-    }
-  }
-
-  addFriends(id: string, friends: Friend[]) {
+  addFriends(id: string, friends: GraphUser[]) {
     const userFriends = this.users.get(id);
     if (userFriends) {
       friends.forEach((friend) => userFriends.add(friend));
     } else {
-      this.addUserId(id);
+      this.addUser(id);
       this.addFriends(id, friends);
     }
   }
 
-  getFriendsOf(id: string): Friend[] {
+  getFriendsOf(id: string): GraphUser[] {
     const userFriends = this.users.get(id);
     if (userFriends) {
       return Array.from(userFriends);
@@ -40,7 +30,7 @@ export class AdjacencyFriendsList {
     return [];
   }
 
-  hasFriend(id: string, friend: Friend): boolean {
+  hasFriend(id: string, friend: GraphUser): boolean {
     return Boolean(this.users.get(id)?.has(friend));
   }
 
@@ -48,7 +38,7 @@ export class AdjacencyFriendsList {
     return this.users.has(id);
   }
 
-  getUsers(): Map<string, Set<Friend>> {
+  getUsers(): Map<string, Set<GraphUser>> {
     return this.users;
   }
 }

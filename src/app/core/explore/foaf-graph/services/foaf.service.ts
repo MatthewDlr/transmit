@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { SupabaseService } from "../../../../shared/services/supabase/supabase.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
-import { Friend } from "../types/Friend.type";
+import { GraphUser } from "../types/GraphUser.type";
 import { AdjacencyFriendsList } from "../types/AdjacencyList.class";
 
 @Injectable({
@@ -14,14 +14,17 @@ export class FoafService {
   networkUsers: AdjacencyFriendsList = new AdjacencyFriendsList();
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
-    this.getFriendsOf(this.userID).then((friends) => {
-      friends.forEach((friend) => {
-        this.getFriendsOf(friend.id);
-      });
+    this.getFriendsOfFriends(this.userID);
+  }
+
+  public async getFriendsOfFriends(userID: string) {
+    const friends = await this.getFriendsOf(userID);
+    friends.forEach((friend) => {
+      this.getFriendsOf(friend.id);
     });
   }
 
-  public async getFriendsOf(userID: string): Promise<Friend[]> {
+  public async getFriendsOf(userID: string): Promise<GraphUser[]> {
     if (this.networkUsers.hasUser(userID)) {
       console.info("Friends of", userID, "were already in the map!");
       return this.networkUsers.getFriendsOf(userID);
@@ -33,7 +36,7 @@ export class FoafService {
       .eq("user_id", userID);
 
     if (error) throw Error(error.message);
-    const friends: Friend[] = friendsProfile ? friendsProfile.map((friend) => friend.profiles).flat() : [];
+    const friends: GraphUser[] = friendsProfile ? friendsProfile.map((friend) => friend.profiles).flat() : [];
 
     this.networkUsers.addFriends(userID, friends);
     console.log(this.networkUsers.getUsers());
