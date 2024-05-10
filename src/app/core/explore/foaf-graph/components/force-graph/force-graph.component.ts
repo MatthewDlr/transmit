@@ -53,7 +53,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .forceSimulation(nodes)
       .force(
         "link",
-        d3.forceLink(links).id((d) => (d as GraphNode).id),
+        d3.forceLink(links).id((d) => (d as any).id),
       )
       .force("charge", d3.forceManyBody())
       .force("x", d3.forceX())
@@ -85,7 +85,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", 5)
+      .attr("r", (d) => (d.radius + 1))
       .attr("fill", (d) => color(String(d.depth)));
 
     node.append("title").text((d) => d.id);
