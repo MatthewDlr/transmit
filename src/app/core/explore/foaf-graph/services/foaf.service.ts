@@ -1,9 +1,9 @@
-import { Injectable } from "@angular/core";
+import { Injectable, WritableSignal, effect, signal } from "@angular/core";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { SupabaseService } from "../../../../shared/services/supabase/supabase.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
-import { GraphUser } from "../types/GraphUser.type";
-import { AdjacencyFriendsList } from "../types/AdjacencyList.class";
+import { GraphNode } from "../types/GraphNode.type";
+import { AdjacencyNodeList } from "../types/AdjacencyList.class";
 
 @Injectable({
   providedIn: "root",
@@ -11,35 +11,49 @@ import { AdjacencyFriendsList } from "../types/AdjacencyList.class";
 export class FoafService {
   supabase: SupabaseClient = this.supabaseService.client;
   userID: string = this.userService.getUserID();
-  networkUsers: AdjacencyFriendsList = new AdjacencyFriendsList();
+  networkUsers: AdjacencyNodeList = new AdjacencyNodeList();
+  isLoading: WritableSignal<boolean> = signal(true);
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
-    this.getFriendsOfFriends(this.userID);
-  }
+    this.isLoading.set(true);
+    this.getFriendsOfFriends(this.userID, 0, 2).then(() => {
+      this.isLoading.set(false);
+    });
 
-  private async getFriendsOfFriends(userID: string) {
-    const friends = await this.getFriendsOf(userID);
-    friends.forEach((friend) => {
-      this.getFriendsOf(friend.id);
+    effect(() => {
+      const isLoading = this.isLoading();
+      console.log(isLoading);
+      if (!isLoading) {
+        console.log(this.networkUsers.getNodes());
+        console.log(this.networkUsers.getLinks());
+      }
     });
   }
 
-  private async getFriendsOf(userID: string): Promise<GraphUser[]> {
-    if (this.networkUsers.hasUser(userID)) {
-      console.info("Friends of", userID, "were already in the map!");
-      return this.networkUsers.getFriendsOf(userID);
+  private async getFriendsOfFriends(userID: string, depth: number, maxDepth: number) {
+    if (depth >= maxDepth) {
+      return;
     }
 
-    let { data: friendsProfile, error } = await this.supabase
-      .from("following")
-      .select("profiles:followed_user_id (name, last_name, id)")
-      .eq("user_id", userID);
+    const friends = await this.getFriendsOf(userID, depth);
+    this.networkUsers.processedUsers.add(userID);
+    this.networkUsers.print();
+
+    const promises = friends.map((friend) => {
+      if (this.networkUsers.processedUsers.has(friend)) return Promise.resolve();
+      return this.getFriendsOfFriends(friend, depth + 1, maxDepth);
+    });
+
+    await Promise.all(promises);
+  }
+
+  private async getFriendsOf(userID: string, depth: number): Promise<string[]> {
+    let { data: followed_users_id, error } = await this.supabase.from("following").select("followed_user_id").eq("user_id", userID);
 
     if (error) throw Error(error.message);
-    const friends: GraphUser[] = friendsProfile ? friendsProfile.map((friend) => friend.profiles).flat() : [];
+    const friendsID: string[] = followed_users_id ? followed_users_id.map((friend) => friend.followed_user_id).flat() : [];
 
-    this.networkUsers.addFriends(userID, friends);
-    console.log(this.networkUsers.getUsers());
-    return friends;
+    this.networkUsers.addLinks(userID, friendsID, depth);
+    return friendsID;
   }
 }
