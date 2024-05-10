@@ -2,7 +2,7 @@ import { GraphLink } from "./GraphLink.type";
 import { GraphNode } from "./GraphNode.type";
 
 export class AdjacencyNodeList {
-  private nodes: Map<GraphNode, Set<string>>;
+  private nodes: Map<GraphNode, Set<GraphNode>>;
   public processedUsers: Set<string> = new Set();
 
   constructor() {
@@ -24,7 +24,7 @@ export class AdjacencyNodeList {
       this.addLinks(source, targets, depth);
     } else {
       targets.forEach((target) => {
-        this.nodes.get(sourceNode)!.add(target);
+        this.nodes.get(sourceNode)!.add({ id: target, depth: depth + 1, radius: 0 });
         this.incrementRadius(target, depth + 1);
       });
     }
@@ -37,32 +37,6 @@ export class AdjacencyNodeList {
     } else {
       this.addNode(nodeID, depth, 1);
     }
-  }
-
-  private getLinksOf(id: string): string[] {
-    const node = this.getNode(id);
-    if (node) {
-      return Array.from(this.nodes.get(node)!);
-    } else {
-      return [];
-    }
-  }
-
-  private hasLink(id: string, friend: GraphNode): boolean {
-    const node = this.getNode(id);
-    if (node) {
-      return this.nodes.get(node)!.has(friend.id);
-    } else {
-      return false;
-    }
-  }
-
-  private hasNode(id: string): boolean {
-    this.nodes.forEach((_, user) => {
-      if (user.id === id) return true;
-      return;
-    });
-    return false;
   }
 
   private getNode(id: string): GraphNode | undefined {
@@ -78,9 +52,9 @@ export class AdjacencyNodeList {
     this.nodes.forEach((values, node) => {
       values.forEach((value) => {
         const link: GraphLink = {
-          source: node.id,
+          source: node,
           target: value,
-          values: 2,
+          value: 2,
         };
         links.push(link);
       });

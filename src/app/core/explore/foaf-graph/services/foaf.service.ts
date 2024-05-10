@@ -2,16 +2,17 @@ import { Injectable, WritableSignal, effect, signal } from "@angular/core";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { SupabaseService } from "../../../../shared/services/supabase/supabase.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
-import { GraphNode } from "../types/GraphNode.type";
 import { AdjacencyNodeList } from "../types/AdjacencyList.class";
+import { GraphLink } from "../types/GraphLink.type";
+import { GraphNode } from "../types/GraphNode.type";
 
 @Injectable({
   providedIn: "root",
 })
 export class FoafService {
-  supabase: SupabaseClient = this.supabaseService.client;
-  userID: string = this.userService.getUserID();
-  networkUsers: AdjacencyNodeList = new AdjacencyNodeList();
+  private supabase: SupabaseClient = this.supabaseService.client;
+  private userID: string = this.userService.getUserID();
+  private networkUsers: AdjacencyNodeList = new AdjacencyNodeList();
   isLoading: WritableSignal<boolean> = signal(true);
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
@@ -55,5 +56,13 @@ export class FoafService {
 
     this.networkUsers.addLinks(userID, friendsID, depth);
     return friendsID;
+  }
+
+  public getLinks(): GraphLink[] {
+    return this.networkUsers.getLinks();
+  }
+
+  public getNodes(): GraphNode[] {
+    return this.networkUsers.getNodes();
   }
 }
