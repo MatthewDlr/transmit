@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, effect } from "@angular/core";
+import { Component, EventEmitter, OnChanges, OnDestroy, OnInit, SimpleChanges, effect } from "@angular/core";
 import * as d3 from "d3";
 import { FoafService } from "../../services/foaf.service";
 import { GraphLink } from "../../types/GraphLink.type";
@@ -12,7 +12,7 @@ import { Subject } from "rxjs";
   templateUrl: "./force-graph.component.html",
   styleUrl: "./force-graph.component.css",
 })
-export class ForceGraphComponent implements OnDestroy {
+export class ForceGraphComponent implements OnDestroy, OnChanges {
   links: GraphLink[] = [];
   nodes: GraphNode[] = [];
   private destroy$ = new Subject<void>();
@@ -24,7 +24,15 @@ export class ForceGraphComponent implements OnDestroy {
 
       this.links = this.foafService.getLinks();
       this.nodes = this.foafService.getNodes();
+
+      this.chart();
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes["links"] || changes["nodes"]) {
+      this.chart();
+    }
   }
 
   public chart = () => {
@@ -53,7 +61,8 @@ export class ForceGraphComponent implements OnDestroy {
 
     // Create the SVG container.
     const svg = d3
-      .create("svg")
+      .select("#chart") // select the container
+      .append("svg")
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", [-width / 2, -height / 2, width, height])
