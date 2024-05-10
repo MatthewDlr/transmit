@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnChanges, OnDestroy, OnInit, SimpleChanges, effect } from "@angular/core";
+import { Component, OnChanges, OnDestroy, SimpleChanges, effect } from "@angular/core";
 import * as d3 from "d3";
 import { FoafService } from "../../services/foaf.service";
 import { GraphLink } from "../../types/GraphLink.type";
@@ -45,15 +45,15 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
 
     // The force simulation mutates links and nodes, so create a copy
     // so that re-evaluating this cell produces the same result.
-    const links = this.links.map((d) => ({ ...d }));
-    const nodes = this.nodes.map((d) => ({ ...d }));
+    const links: GraphLink[] = this.links.map((d) => ({ ...d }));
+    const nodes: GraphNode[] = this.nodes.map((d) => ({ ...d }));
 
     // Create a simulation with several forces.
     const simulation = d3
       .forceSimulation(nodes)
       .force(
         "link",
-        d3.forceLink(links).id((d) => (d as any).id),
+        d3.forceLink(links).id((d) => (d as GraphNode).id),
       )
       .force("charge", d3.forceManyBody())
       .force("x", d3.forceX())
@@ -71,12 +71,12 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
     // Add a line for each link, and a circle for each node.
     const link = svg
       .append("g")
-      .attr("stroke", "#999")
-      .attr("stroke-opacity", 0.6)
+      .attr("stroke", "black")
+      .attr("stroke-opacity", 1)
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", (d) => Math.sqrt(d.value));
+      .attr("stroke-width", 2);
 
     const node = svg
       .append("g")
@@ -85,22 +85,21 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", (d) => (d.radius + 1))
+      .attr("r", (d) => d.radius + 1)
       .attr("fill", (d) => color(String(d.depth)));
 
     node.append("title").text((d) => d.id);
 
     // Add a drag behavior.
-
     node.call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended) as any);
 
     // Set the position attributes of links and nodes each time the simulation ticks.
     simulation.on("tick", () => {
       link
-        .attr("x1", (d) => d.source.y as number)
-        .attr("y1", (d) => d.source.y as number)
-        .attr("x2", (d) => d.target.x as number)
-        .attr("y2", (d) => d.target.y as number);
+        .attr("x1", (d) => (d.source as GraphNode)?.x || 0)
+        .attr("y1", (d) => (d.source as GraphNode)?.y || 0)
+        .attr("x2", (d) => (d.target as GraphNode)?.x || 0)
+        .attr("y2", (d) => (d.target as GraphNode)?.y || 0);
 
       node.attr("cx", (d) => d.x as number).attr("cy", (d) => d.y as number);
     });
@@ -126,9 +125,6 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       event.subject.fy = null;
     }
 
-    // When this cell is re-run, stop the previous simulation. (This doesn’t
-    // really matter since the target alpha is zero and the simulation will
-    // stop naturally, but it’s a good practice.)
     this.destroy$.subscribe(() => simulation.stop());
 
     return svg.node();

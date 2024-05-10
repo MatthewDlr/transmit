@@ -53,8 +53,7 @@ export class AdjacencyNodeList {
       values.forEach((value) => {
         const link: GraphLink = {
           source: node,
-          target: value,
-          value: 2,
+          target: value.id,
         };
         links.push(link);
       });
