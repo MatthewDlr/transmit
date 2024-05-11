@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
 import { isNotLoggedInGuard } from "./auth/guards/is-not-logged-in.guard";
 import { isLoggedIn } from "./auth/guards/is-logged-in.guard";
+import { UserProfilePageComponent } from "./core/explore/components/user-profile-page/user-profile-page.component";
 import { ExplorePageComponent } from "./core/explore/explore-page.component";
 
 export const routes: Routes = [
@@ -23,6 +24,10 @@ export const routes: Routes = [
     path: "account",
     loadComponent: () => import("./core/account/components/account-page/account-page.component").then((m) => m.AccountPageComponent),
     //canActivate: [isLoggedIn],
+  },
+  {
+    path: 'user/:id',
+    component: UserProfilePageComponent
   },
   {
     path: "**",

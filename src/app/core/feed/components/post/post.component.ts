@@ -16,6 +16,6 @@ export class PostComponent implements OnInit {
   @Input() post!: Post;
 
   ngOnInit(): void {
-    console.log(this.post.image);
+    //console.log(this.post.image);
   }
 }

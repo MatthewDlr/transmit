@@ -3,5 +3,6 @@ export interface Post {
   content: string;
   timestamp: Date;
   author: string;
+  authorNumber: string;
   image?: string;
 }
