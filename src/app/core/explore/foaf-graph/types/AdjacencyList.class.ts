@@ -1,4 +1,4 @@
-import { GraphLink } from "./GraphLink.type";
+import { SimulationLinkDatum } from "d3";
 import { GraphNode } from "./GraphNode.type";
 
 export class AdjacencyNodeList {
@@ -47,12 +47,12 @@ export class AdjacencyNodeList {
     return Array.from(this.nodes.keys());
   }
 
-  public getLinks(): GraphLink[] {
-    const links: GraphLink[] = [];
+  public getLinks(): SimulationLinkDatum<GraphNode>[] {
+    const links: SimulationLinkDatum<GraphNode>[] = [];
     this.nodes.forEach((values, node) => {
       values.forEach((value) => {
-        const link: GraphLink = {
-          source: node,
+        const link: SimulationLinkDatum<GraphNode> = {
+          source: node.id,
           target: value.id,
         };
         links.push(link);

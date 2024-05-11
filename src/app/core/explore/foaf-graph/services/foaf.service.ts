@@ -3,8 +3,8 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { SupabaseService } from "../../../../shared/services/supabase/supabase.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { AdjacencyNodeList } from "../types/AdjacencyList.class";
-import { GraphLink } from "../types/GraphLink.type";
 import { GraphNode } from "../types/GraphNode.type";
+import { SimulationLinkDatum } from "d3";
 
 @Injectable({
   providedIn: "root",
@@ -58,7 +58,7 @@ export class FoafService {
     return friendsID;
   }
 
-  public getLinks(): GraphLink[] {
+  public getLinks(): SimulationLinkDatum<GraphNode>[] {
     return this.networkUsers.getLinks();
   }
 

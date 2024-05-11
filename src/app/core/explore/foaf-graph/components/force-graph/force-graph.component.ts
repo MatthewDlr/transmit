@@ -1,9 +1,13 @@
 import { Component, OnChanges, OnDestroy, SimpleChanges, effect } from "@angular/core";
 import * as d3 from "d3";
 import { FoafService } from "../../services/foaf.service";
-import { GraphLink } from "../../types/GraphLink.type";
 import { GraphNode } from "../../types/GraphNode.type";
 import { Subject } from "rxjs";
+import { SimulationLinkDatum } from "d3";
+
+import resolveConfig from "tailwindcss/resolveConfig";
+import tailwindConfig from "tailwindcss/defaultConfig";
+const tailwind = resolveConfig(tailwindConfig);
 
 @Component({
   selector: "app-force-graph",
@@ -13,7 +17,7 @@ import { Subject } from "rxjs";
   styleUrl: "./force-graph.component.css",
 })
 export class ForceGraphComponent implements OnDestroy, OnChanges {
-  links: GraphLink[] = [];
+  links: SimulationLinkDatum<GraphNode>[] = [];
   nodes: GraphNode[] = [];
   private destroy$ = new Subject<void>();
 
@@ -37,15 +41,15 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
 
   public chart = () => {
     // Specify the dimensions of the chart.
-    const width = 928;
-    const height = 680;
+    const width = 500;
+    const height = 500;
 
     // Specify the color scale.
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     // The force simulation mutates links and nodes, so create a copy
     // so that re-evaluating this cell produces the same result.
-    const links: GraphLink[] = this.links.map((d) => ({ ...d }));
+    const links: SimulationLinkDatum<GraphNode>[] = this.links.map((d) => ({ ...d }));
     const nodes: GraphNode[] = this.nodes.map((d) => ({ ...d }));
 
     // Create a simulation with several forces.
@@ -53,9 +57,12 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .forceSimulation(nodes)
       .force(
         "link",
-        d3.forceLink(links).id((d) => (d as GraphNode).id),
+        d3
+          .forceLink(links)
+          .id((d: any) => d.id)
+          .strength(0.015),
       )
-      .force("charge", d3.forceManyBody())
+      .force("charge", d3.forceManyBody().strength(-400))
       .force("x", d3.forceX())
       .force("y", d3.forceY());
 
@@ -71,8 +78,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
     // Add a line for each link, and a circle for each node.
     const link = svg
       .append("g")
-      .attr("stroke", "black")
-      .attr("stroke-opacity", 1)
+      .classed("stroke-secondary-600 opacity-20", true)
       .selectAll("line")
       .data(links)
       .join("line")
@@ -85,8 +91,16 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", (d) => d.radius + 1)
-      .attr("fill", (d) => color(String(d.depth)));
+      .attr("r", (d) => 1.5 * (d.radius + 1))
+      .on("click", function (event, d) {
+        console.log(d.id);
+      })
+      .classed("hover:cursor-pointer", true)
+      .classed("fill-primary-900", (d) => d.depth === 0)
+      .classed("fill-primary-700", (d) => d.depth === 1)
+      .classed("fill-primary-500", (d) => d.depth === 2)
+      .classed("fill-primary-300", (d) => d.depth === 3)
+      .classed("fill-primary-100", (d) => d.depth === 4);
 
     node.append("title").text((d) => d.id);
 
