@@ -98,7 +98,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .classed("fill-primary-400 opacity-40", (d) => d.depth === 3)
       .classed(" fill-primary-200 opacity-20", (d) => d.depth === 4);
 
-    node.append("title").text((d) => d.id);
+    node.append("title").text('Open in side peek');
 
     // Add a drag behavior.
     node.call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended) as any);
