@@ -62,7 +62,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
           .id((d: any) => d.id)
           .strength(0.015),
       )
-      .force("charge", d3.forceManyBody().strength(-400))
+      .force("charge", d3.forceManyBody().strength(-300))
       .force("x", d3.forceX())
       .force("y", d3.forceY());
 
@@ -91,16 +91,16 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", (d) => 1.5 * (d.radius + 1))
+      .attr("r", (d) => 1.25 * (d.radius + 1))
       .on("click", function (event, d) {
         console.log(d.id);
       })
       .classed("hover:cursor-pointer", true)
-      .classed("fill-primary-900", (d) => d.depth === 0)
-      .classed("fill-primary-700", (d) => d.depth === 1)
-      .classed("fill-primary-500", (d) => d.depth === 2)
-      .classed("fill-primary-300", (d) => d.depth === 3)
-      .classed("fill-primary-100", (d) => d.depth === 4);
+      .classed("fill-primary-950", (d) => d.depth === 0)
+      .classed("fill-primary-800 opacity-80", (d) => d.depth === 1)
+      .classed("fill-primary-600 opacity-60", (d) => d.depth === 2)
+      .classed("fill-primary-400 opacity-40", (d) => d.depth === 3)
+      .classed(" fill-primary-200 opacity-20", (d) => d.depth === 4);
 
     node.append("title").text((d) => d.id);
 
