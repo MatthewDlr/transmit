@@ -3,7 +3,7 @@ import {UserProfile} from "../../../../shared/types/Profile.type";
 import {Interest} from "../../../../shared/types/Interest.type";
 import {UserProfileService} from "../../../../shared/services/user-profile/user-profile.service";
 import {ActivatedRoute} from '@angular/router';
-import {KeyValuePipe, NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@angular/common";
+import {AsyncPipe, KeyValuePipe, NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@angular/common";
 
 @Component({
   selector: 'app-user-profile-page',
@@ -14,7 +14,8 @@ import {KeyValuePipe, NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@
     NgForOf,
     KeyValuePipe,
     NgClass,
-    NgStyle
+    NgStyle,
+    AsyncPipe
   ],
   templateUrl: './user-profile-page.component.html',
   styleUrl: './user-profile-page.component.css'
@@ -27,6 +28,7 @@ export class UserProfilePageComponent  implements OnInit{
   myInterests: Map<number, Interest> = new Map();
   userInterests: Map<number, Interest> = new Map();
   defaultImageUrl = './assets/images/defpfp.png';
+  isConnectedToUser: boolean = false;
 
   constructor(private userService: UserProfileService, private route: ActivatedRoute) {
 
@@ -55,6 +57,22 @@ export class UserProfilePageComponent  implements OnInit{
             }
           });
         }
+
+        this.isConnectedToUser = await this.doesLinkExistWith(this.externUserId);
+        if(this.isConnectedToUser){
+          console.log("Is connected to user");
+        } else {
+          console.log("Not connected to user");
+        }
+
+        if (this.isConnectedToUser) {
+          const removeFriendButton = document.getElementById('unfollowbtn');
+          removeFriendButton?.classList.remove('hidden');
+        } else {
+          const addFriendButton = document.getElementById('followbtn');
+          addFriendButton?.classList.remove('hidden');
+        }
+
       }
     } catch (error) {
       console.error(error);
@@ -64,5 +82,25 @@ export class UserProfilePageComponent  implements OnInit{
   onImageError(event: any) {
     console.log("error on pfp loading, defaulting");
     event.target.src = this.defaultImageUrl;
+  }
+
+  async follow(externUserId: number) {
+    await this.userService.follow(externUserId);
+    const removeFriendButton = document.getElementById('unfollowbtn');
+    removeFriendButton?.classList.remove('hidden');
+    const addFriendButton = document.getElementById('followbtn');
+    addFriendButton?.classList.add('hidden');
+  }
+
+  async unfollow(externUserId: number) {
+    await this.userService.unfollow(externUserId);
+    const removeFriendButton = document.getElementById('unfollowbtn');
+    removeFriendButton?.classList.add('hidden');
+    const addFriendButton = document.getElementById('followbtn');
+    addFriendButton?.classList.remove('hidden');
+  }
+
+  async doesLinkExistWith(externUserId: number) {
+    return this.userService.doesLinkExistWith((externUserId));
   }
 }

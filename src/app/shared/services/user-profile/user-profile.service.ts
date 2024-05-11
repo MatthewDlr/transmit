@@ -5,7 +5,6 @@ import { SupabaseService } from "../supabase/supabase.service";
 import { UserProfile } from "../../types/Profile.type";
 import { Interest } from "../../types/Interest.type";
 
-
 @Injectable({
   providedIn: "root",
 })
@@ -151,4 +150,88 @@ export class UserProfileService {
 
     return this.getExternalUserInterests(data.user_number);
   }
+
+  public async getUuidByUserNumber(userNumber: number): Promise<string | null> {
+    const { data, error } = await this.supabase
+      .from('profiles')
+      .select('id')
+      .eq('user_number', userNumber)
+      .single();
+
+    if (error) throw error;
+    return data ? data.id : null;
+  }
+
+  public async doesLinkExistWith(followedUserId: number): Promise<boolean> {
+    if (!this.user) throw new Error("User is not logged in");
+
+    const followedUserUuid = await this.getUuidByUserNumber(followedUserId);
+    if (followedUserUuid === null) {
+      throw new Error("UserId does not exist");
+    }
+
+    const { data: data1, error: error1 } = await this.supabase
+      .from('following')
+      .select('*')
+      .eq('user_id', this.user.id)
+      .eq('followed_user_id', followedUserUuid);
+
+    const { data: data2, error: error2 } = await this.supabase
+      .from('following')
+      .select('*')
+      .eq('user_id', followedUserUuid)
+      .eq('followed_user_id', this.user.id);
+
+    if (error1 || error2) throw error1 || error2;
+    return !(data1?.length === 0 && data2.length === 0);
+
+  }
+
+  public async follow(followedUserId: number | string): Promise<void> {
+    if (!this.user) throw new Error("User is not logged in");
+
+    let followedUserUuid: string | null;
+    if (typeof followedUserId === 'number') {
+      followedUserUuid = await this.getUuidByUserNumber(followedUserId);
+    } else {
+      followedUserUuid = followedUserId;
+    }
+
+    if (!followedUserUuid) {
+      throw new Error("Followed user does not exist");
+    }
+
+    const { error } = await this.supabase
+      .from('following')
+      .insert([
+        { user_id: this.user.id, followed_user_id: followedUserUuid }
+      ]);
+
+    if (error) throw error;
+  }
+
+  public async unfollow(followedUserId: number | string): Promise<void> {
+    if (!this.user) throw new Error("User is not logged in");
+
+    let followedUserUuid: string | null;
+    if (typeof followedUserId === 'number') {
+      followedUserUuid = await this.getUuidByUserNumber(followedUserId);
+    } else {
+      followedUserUuid = followedUserId;
+    }
+
+    if (!followedUserUuid) {
+      throw new Error("Followed user does not exist");
+    }
+
+    const { error } = await this.supabase
+      .from('following')
+      .delete()
+      .eq('user_id', this.user.id)
+      .eq('followed_user_id', followedUserUuid);
+
+    if (error) throw error;
+  }
+
+
 }

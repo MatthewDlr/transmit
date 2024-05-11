@@ -11,10 +11,23 @@
       </div>
 
       <div class="flex flex-col gap-3 w-4/5">
-        <div class="flex flex-row gap-2 text-4xl font-bold">
-          <p>{{externUser.name}}</p>
-          <p>{{externUser.last_name}}</p>
+        <div class="flex flex-row flex-wrap gap-3 items-center">
+          <div class="flex flex-row gap-2 text-4xl font-bold">
+            <p>{{externUser.name}}</p>
+            <p>{{externUser.last_name}}</p>
+          </div>
+
+          <div>
+            <input type="button" id="followbtn" value="Add friend" (click)="follow(externUserId)"
+                   class="hidden bg-green-400 rounded-xl p-2 pt-1 pb-1 text-xl font-semibold">
+          </div>
+          <div>
+            <input type="button" id="unfollowbtn" value="Remove friend" (click)="unfollow(externUserId)"
+                   class="hidden bg-orange-600 rounded-xl p-2 pt-1 pb-1 text-xl font-semibold">
+          </div>
+
         </div>
+
         <div class="flex flex-row flex-wrap gap-2">
           <div *ngFor="let interest of userInterests | keyvalue"
                [ngStyle]="{'background-color': myInterests.has(interest.key) ? 'green' : 'transparent',
