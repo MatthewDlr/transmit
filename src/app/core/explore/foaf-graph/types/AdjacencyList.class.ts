@@ -1,5 +1,5 @@
 import { SimulationLinkDatum } from "d3";
-import { GraphNode } from "./GraphNode.type";
+import { GraphNode } from "./GraphNode.interface";
 
 export class AdjacencyNodeList {
   private nodes: Map<GraphNode, Set<GraphNode>>;

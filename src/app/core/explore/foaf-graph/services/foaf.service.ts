@@ -3,7 +3,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { SupabaseService } from "../../../../shared/services/supabase/supabase.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { AdjacencyNodeList } from "../types/AdjacencyList.class";
-import { GraphNode } from "../types/GraphNode.type";
+import { GraphNode } from "../types/GraphNode.interface";
 import { SimulationLinkDatum } from "d3";
 
 @Injectable({
@@ -19,6 +19,9 @@ export class FoafService {
     this.isLoading.set(true);
     this.getFriendsOfFriends(this.userID, 0, 2).then(() => {
       this.isLoading.set(false);
+
+      this.subscribeToDeletions();
+      this.subscribeToInserts();
     });
 
     effect(() => {
@@ -56,6 +59,24 @@ export class FoafService {
 
     this.networkUsers.addLinks(userID, friendsID, depth);
     return friendsID;
+  }
+
+  private subscribeToDeletions() {
+    const channels = this.supabase
+      .channel("custom-delete-channel")
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "following" }, (payload) => {
+        console.log("Change received!", payload);
+      })
+      .subscribe();
+  }
+
+  private subscribeToInserts() {
+    const channels = this.supabase
+      .channel("custom-delete-channel")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "following" }, (payload) => {
+        console.log("Change received!", payload);
+      })
+      .subscribe();
   }
 
   public getLinks(): SimulationLinkDatum<GraphNode>[] {

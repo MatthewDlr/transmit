@@ -1,7 +1,7 @@
 import { Component, OnChanges, OnDestroy, SimpleChanges, effect } from "@angular/core";
 import * as d3 from "d3";
 import { FoafService } from "../../services/foaf.service";
-import { GraphNode } from "../../types/GraphNode.type";
+import { GraphNode } from "../../types/GraphNode.interface";
 import { Subject } from "rxjs";
 import { SimulationLinkDatum } from "d3";
 
@@ -44,9 +44,6 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
     const width = 500;
     const height = 500;
 
-    // Specify the color scale.
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
     // The force simulation mutates links and nodes, so create a copy
     // so that re-evaluating this cell produces the same result.
     const links: SimulationLinkDatum<GraphNode>[] = this.links.map((d) => ({ ...d }));
@@ -86,8 +83,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
 
     const node = svg
       .append("g")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2)
       .selectAll("circle")
       .data(nodes)
       .join("circle")
@@ -95,7 +91,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .on("click", function (event, d) {
         console.log(d.id);
       })
-      .classed("hover:cursor-pointer", true)
+      .classed("stroke-secondary-50 hover:cursor-pointer", true)
       .classed("fill-primary-950", (d) => d.depth === 0)
       .classed("fill-primary-800 opacity-80", (d) => d.depth === 1)
       .classed("fill-primary-600 opacity-60", (d) => d.depth === 2)
