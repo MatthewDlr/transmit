@@ -1,24 +1,31 @@
 <div class="flex flex-col gap-10 w-full h-full items-center pt-20 px-52">
-  <div id="userProfile" *ngIf="externUser" class="w-4/5 p-3 rounded-xl" style="background-color: #f2f2f2" >
+  <div *ngIf="externUser" class="p-3 rounded-xl" style="background-color: #f2f2f2" >
     <div class="flex flex-row gap-5">
       <div class="">
-        <ng-container *ngIf="!imageError; else noImage">
-          <div *ngIf="externUser.avatar_url">
-            <img [src]="externUser.avatar_url" (error)="onImageError($event)" [width]="150" [height]="150" alt="" class="rounded-xl">
-          </div>
-        </ng-container>
-        <ng-template #noImage>
-          <div class="bg-gray-200 rounded-xl" [style.width.px]="150" [style.height.px]="150"></div>
-        </ng-template>
+        <img [src]="externUser.avatar_url || defaultImageUrl"
+             (error)="onImageError($event)"
+             [width]="150"
+             [height]="150"
+             alt=""
+             class="rounded-xl">
       </div>
 
-      <div class="flex flex-row gap-2 text-4xl font-bold">
-        <p>{{externUser.name}}</p>
-        <p>{{externUser.last_name}}</p>
+      <div class="flex flex-col gap-3 w-4/5">
+        <div class="flex flex-row gap-2 text-4xl font-bold">
+          <p>{{externUser.name}}</p>
+          <p>{{externUser.last_name}}</p>
+        </div>
+        <div class="flex flex-row flex-wrap gap-2">
+          <div *ngFor="let interest of userInterests | keyvalue"
+               [ngStyle]="{'background-color': myInterests.has(interest.key) ? 'green' : 'transparent',
+                   'border-color': myInterests.has(interest.key) ? 'green' : 'black',
+                   'color': myInterests.has(interest.key) ? 'white' : 'black'}"
+               class="border-2 border-black rounded-xl p-2 pt-1 pb-1">
+            {{ interest.value.name }}
+          </div>
+        </div>
       </div>
     </div>
-
-
 
   </div>
 

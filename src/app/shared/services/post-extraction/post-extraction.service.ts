@@ -27,7 +27,7 @@ export class PostListService {
   public async getPostList(): Promise<Post[]> {
     const { data, error } = await this.supabase
       .from("posts")
-      .select("id, created_at, content, profiles(name, last_name), picture_url");
+      .select("id, created_at, content, profiles(name, last_name, user_number), picture_url");
 
     if (error) throw error;
     if (!data) throw new Error("No post in database");
@@ -37,6 +37,7 @@ export class PostListService {
       content: item.content,
       timestamp: new Date(item.created_at),
       author: `${item.profiles.name} ${item.profiles.last_name}`,
+      authorNumber: `${item.profiles.user_number}`,
       image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
     }));
 

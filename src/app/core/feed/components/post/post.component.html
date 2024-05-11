@@ -4,7 +4,7 @@
   <hr style="margin: 5px">
   <div style="display: flex; align-items: start;">
     <p class="timestamp" style="margin-right: 10px;">{{ post.timestamp | date: 'dd/MM/yyyy, H:mm' }}</p>
-    <p class="author" style="margin: 0;">&#64;{{ post.author }}</p>
+    <a class="author" style="margin: 0;" href="user/{{post.authorNumber}}">&#64;{{ post.author }}</a>
   </div>
 
 </div>

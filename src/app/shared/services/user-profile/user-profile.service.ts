@@ -5,6 +5,7 @@ import { SupabaseService } from "../supabase/supabase.service";
 import { UserProfile } from "../../types/Profile.type";
 import { Interest } from "../../types/Interest.type";
 
+
 @Injectable({
   providedIn: "root",
 })
@@ -111,5 +112,43 @@ export class UserProfileService {
     const user = data as UserProfile;
     console.log("Queried user:", user);
     return user;
+  }
+
+  public async getExternalUserInterests(userId : number): Promise< Interest[]> {
+    let { data: interests_list, error: error1 } = await this.supabase.from("interests_list").select("*");
+     let { data: interests, error: error2 } = await this.supabase
+      .from('user_interests_with_user_number')
+      .select('interest_id')
+      .eq('user_number', userId);
+
+    if (error1) throw Error(error1.message);
+    if (error2) throw Error(error2.message);
+
+    console.log(interests);
+    const user_interests: number[] = interests?.map((interest) => interest.interest_id) || [];
+
+    const userInterests =
+      interests_list?.map((interest) => ({
+        id: interest.id,
+        name: interest.name,
+        followed: user_interests.includes(interest.id),
+      })) || [];
+
+    return userInterests;
+  }
+
+  public async getMyInterests(){
+    const { data, error } = await this.supabase
+      .from("profiles")
+      .select("user_number")
+      .eq("id", this.user?.id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user profile:", error);
+      return;
+    }
+
+    return this.getExternalUserInterests(data.user_number);
   }
 }
