@@ -98,4 +98,18 @@ export class UserProfileService {
     this.userProfile.set(updatedProfile);
     return "OK";
   }
+
+  public async getExternalProfile(userId : number){
+    const { data, error } = await this.supabase
+      .from("profiles")
+      .select("updated_at, name, last_name, avatar_url")
+      .eq("user_number", userId)
+      .single();
+    if (error) throw error;
+    if (!data) throw new Error("Seems to user does not exist in database");
+
+    const user = data as UserProfile;
+    console.log("Queried user:", user);
+    return user;
+  }
 }
