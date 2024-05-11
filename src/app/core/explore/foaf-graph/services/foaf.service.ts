@@ -26,7 +26,6 @@ export class FoafService {
 
     effect(() => {
       const isLoading = this.isLoading();
-      console.log(isLoading);
       if (!isLoading) {
         console.log(this.networkUsers.getNodes());
         console.log(this.networkUsers.getLinks());
@@ -41,7 +40,7 @@ export class FoafService {
 
     const friends = await this.getFriendsOf(userID, depth);
     this.networkUsers.processedUsers.add(userID);
-    this.networkUsers.print();
+    //this.networkUsers.print();
 
     const promises = friends.map((friend) => {
       if (this.networkUsers.processedUsers.has(friend)) return Promise.resolve();
