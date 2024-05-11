@@ -72,14 +72,42 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .attr("viewBox", [-width / 2, -height / 2, width, height])
       .attr("style", "max-width: 100%; height: auto;");
 
+    svg
+      .append("defs")
+      .append("marker")
+      .attr("id", "arrowhead")
+      .attr("viewBox", "-0 -5 10 10") //the bound of the SVG viewport for the current SVG fragment. defines a coordinate system 10 wide and 10 high starting on (0,-5)
+      .attr("refX", 100) // x coordinate for the reference point of the marker. If circle is bigger, this need to be bigger.
+      .attr("refY", 0)
+      .attr("orient", "auto")
+      .attr("markerWidth", 4)
+      .attr("markerHeight", 4)
+      .attr("xoverflow", "visible")
+      .append("svg:path")
+      .attr("d", "M 0,-5 L 10 ,0 L 0,5")
+      .classed("fill-secondary-400", true)
+      .style("stroke", "none");
+
+    // Zoom behavior, limiting the scale extent to 0.1 to 10
+    const zoom = d3
+      .zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.5, 3])
+      .on("zoom", (event) => {
+        svg.attr("transform", event.transform);
+      });
+
+    const g = svg.append("g");
+    svg.call(zoom);
+
     // Add a line for each link, and a circle for each node.
     const link = svg
       .append("g")
-      .classed("stroke-secondary-600 opacity-20", true)
+      .classed("stroke-secondary-300", true)
       .selectAll("line")
       .data(links)
       .join("line")
-      .attr("stroke-width", 2);
+      .attr("stroke-width", 1.5)
+      .attr("marker-end", "url(#arrowhead)");
 
     const node = svg
       .append("g")
@@ -88,6 +116,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .data(nodes)
       .join("circle")
       .attr("r", (d) => 1.25 * (d.radius + 1))
+      .attr("refX", (d) => d.radius + 10)
       .on("click", function (event, d) {
         console.log(d.id);
       })
@@ -98,7 +127,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .classed("fill-primary-400 opacity-40", (d) => d.depth === 3)
       .classed(" fill-primary-200 opacity-20", (d) => d.depth === 4);
 
-    node.append("title").text('Open in side peek');
+    node.append("title").text("Open in side peek");
 
     // Add a drag behavior.
     node.call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended) as any);
