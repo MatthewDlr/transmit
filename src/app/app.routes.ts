@@ -1,6 +1,7 @@
 import { Routes } from "@angular/router";
 import { isNotLoggedInGuard } from "./auth/guards/is-not-logged-in.guard";
 import { isLoggedIn } from "./auth/guards/is-logged-in.guard";
+import { ExplorePageComponent } from "./core/explore/explore-page.component";
 
 export const routes: Routes = [
   {
@@ -15,7 +16,7 @@ export const routes: Routes = [
   },
   {
     path: "explore",
-    loadComponent: () => import("./core/explore/explore-page.component").then((m) => m.ExplorePageComponent),
+    component: ExplorePageComponent,
     canActivate: [isLoggedIn],
   },
   {
