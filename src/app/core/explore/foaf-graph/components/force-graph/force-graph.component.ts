@@ -5,10 +5,6 @@ import { GraphNode } from "../../types/GraphNode.interface";
 import { Subject } from "rxjs";
 import { SimulationLinkDatum } from "d3";
 
-import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "tailwindcss/defaultConfig";
-const tailwind = resolveConfig(tailwindConfig);
-
 @Component({
   selector: "app-force-graph",
   standalone: true,
@@ -41,8 +37,8 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
 
   public chart = () => {
     // Specify the dimensions of the chart.
-    const width = 500;
-    const height = 500;
+    const width = window.innerWidth < 800 ? 700 : 900;
+    const height = window.innerWidth < 800 ? 400 : 550;
 
     // The force simulation mutates links and nodes, so create a copy
     // so that re-evaluating this cell produces the same result.
