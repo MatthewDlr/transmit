@@ -1,6 +1,6 @@
 import { Component, OnChanges, OnDestroy, SimpleChanges, effect } from "@angular/core";
 import * as d3 from "d3";
-import { FoafService } from "../../services/foaf.service";
+import { FoafService } from "../../services/foaf/foaf.service";
 import { GraphNode } from "../../types/GraphNode.interface";
 import { Subject } from "rxjs";
 import { SimulationLinkDatum } from "d3";
