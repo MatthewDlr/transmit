@@ -13,30 +13,32 @@ export class FoafService {
   private supabase: SupabaseClient = this.supabaseService.client;
   private userID: string = this.userService.getUserID();
   private networkUsers: AdjacencyNodeList = new AdjacencyNodeList();
-  isLoading: WritableSignal<boolean> = signal(true);
+  public isLoading: WritableSignal<boolean> = signal(true);
+  public readonly DEFAULT_MAX_DEPTH = 2;
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
-    this.isLoading.set(true);
-    this.getFriendsOfFriends(this.userID, 0, 2).then(() => {
-      this.isLoading.set(false);
-
-      this.subscribeToDeletions();
-      this.subscribeToInserts();
-    });
+    this.fetch(this.DEFAULT_MAX_DEPTH);
 
     effect(() => {
-      const isLoading = this.isLoading();
-      if (!isLoading) {
+      if (!this.isLoading()) {
         console.log(this.networkUsers.getNodes());
         console.log(this.networkUsers.getLinks());
       }
     });
   }
 
+  public async fetch(maxDepth: number) {
+    console.log(maxDepth);
+    this.isLoading.set(true);
+    await this.getFriendsOfFriends(this.userID, 0, maxDepth);
+    this.isLoading.set(false);
+
+    this.subscribeToDeletions();
+    this.subscribeToInserts();
+  }
+
   private async getFriendsOfFriends(userID: string, depth: number, maxDepth: number) {
-    if (depth >= maxDepth) {
-      return;
-    }
+    if (depth >= maxDepth) return;
 
     const friends = await this.getFriendsOf(userID, depth);
     this.networkUsers.processedUsers.add(userID);

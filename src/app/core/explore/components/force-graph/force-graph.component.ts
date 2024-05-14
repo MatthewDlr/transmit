@@ -4,13 +4,13 @@ import { FoafService } from "../../services/foaf/foaf.service";
 import { GraphNode } from "../../types/GraphNode.interface";
 import { Subject } from "rxjs";
 import { SimulationLinkDatum } from "d3";
-import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { SidePeekService } from "../../services/side-peek/side-peek.service";
+import { DepthControlComponent } from "../depth-control/depth-control.component";
 
 @Component({
   selector: "app-force-graph",
   standalone: true,
-  imports: [],
+  imports: [DepthControlComponent],
   templateUrl: "./force-graph.component.html",
   styleUrl: "./force-graph.component.css",
 })
