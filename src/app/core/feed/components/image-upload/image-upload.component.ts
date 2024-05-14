@@ -13,7 +13,7 @@ import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
   styleUrls: ['./image-upload.component.css']
 })
 export class ImageUploadComponent implements OnInit {
-  file: undefined;
+  file: File | null = null;
   imageName = '';
   preview = '';
 
@@ -30,16 +30,18 @@ export class ImageUploadComponent implements OnInit {
     this.preview = '';
     this.file = event.target.files[0];
 
-    if (this.file) {
+    if (this.file && (this.file.type === 'image/jpeg' || this.file.type === 'image/jpg' || this.file.type === 'image/png')) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        //console.log(e.target.result);
         this.preview = e.target.result;
       };
       reader.readAsDataURL(this.file);
-    }
 
-    this.fileSelected.emit(this.file);
+      this.fileSelected.emit(this.file);
+    } else {
+      console.log('Invalid file type. Please select a JPG, JPEG or PNG file.');
+      this.file = null;
+    }
   }
 
 }
