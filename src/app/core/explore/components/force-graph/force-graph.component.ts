@@ -55,7 +55,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
           .id((d: any) => d.id)
           .strength(0.015),
       )
-      .force("charge", d3.forceManyBody().strength(-300))
+      .force("charge", d3.forceManyBody().strength(-500))
       .force("x", d3.forceX())
       .force("y", d3.forceY());
 
