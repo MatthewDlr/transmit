@@ -26,6 +26,7 @@ export class PostTimelineComponent implements OnInit {
   async fetchPosts(): Promise<void> {
     try {
       this.posts = await this.postService.getPostList();
+      this.posts.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
