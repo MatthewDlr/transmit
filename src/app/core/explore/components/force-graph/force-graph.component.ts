@@ -4,6 +4,8 @@ import { FoafService } from "../../services/foaf/foaf.service";
 import { GraphNode } from "../../types/GraphNode.interface";
 import { Subject } from "rxjs";
 import { SimulationLinkDatum } from "d3";
+import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
+import { SidePeekService } from "../../services/side-peek/side-peek.service";
 
 @Component({
   selector: "app-force-graph",
@@ -17,7 +19,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
   nodes: GraphNode[] = [];
   private destroy$ = new Subject<void>();
 
-  constructor(private foafService: FoafService) {
+  constructor(private foafService: FoafService, private sidePeekService: SidePeekService) {
     effect(() => {
       const isLoading = this.foafService.isLoading();
       if (isLoading) return;
@@ -35,10 +37,11 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
     }
   }
 
-  public chart = () => {
+  public chart() {
     // Specify the dimensions of the chart.
     const width = window.innerWidth < 800 ? 700 : 900;
     const height = window.innerWidth < 800 ? 400 : 550;
+    const self = this;
 
     // The force simulation mutates links and nodes, so create a copy
     // so that re-evaluating this cell produces the same result.
@@ -114,7 +117,7 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .attr("r", (d) => 1.25 * (d.radius + 1))
       .attr("refX", (d) => d.radius + 10)
       .on("click", function (event, d) {
-        console.log(d.id);
+        self.sidePeekService.setUser(d.id, d.depth, d.radius);
       })
       .classed("stroke-secondary-50 hover:cursor-pointer", true)
       .classed("fill-primary-950", (d) => d.depth === 0)
@@ -161,9 +164,8 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
     }
 
     this.destroy$.subscribe(() => simulation.stop());
-
     return svg.node();
-  };
+  }
 
   ngOnDestroy() {
     this.destroy$.next();

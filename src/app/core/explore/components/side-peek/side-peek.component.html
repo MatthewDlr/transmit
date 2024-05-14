@@ -1,1 +1,63 @@
-<p>side-peek works!</p>
+<div class="w-full h-full flex flex-col p-5 border border-secondary-200 rounded-xl bg-secondary-100 bg-opacity-50 gap-3">
+  <!-- Profile Picture -->
+  @if (currentUser?.avatar_url) {
+  <img
+    [src]="currentUser?.avatar_url"
+    class="w-full max-w-64 aspect-square rounded-lg"
+  />
+  } @else {
+  <div class="w-full aspect-square rounded-lg bg-secondary-900 flex justify-center items-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      class="size-32 fill-secondary-800"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+        clip-rule="evenodd"
+      />
+    </svg>
+  </div>
+  } @if (!currentUser) {
+  <h3 class="text-primary-900 font-medium text-lg">Click on a node to get it's information</h3>
+  } @else {
+  <div class="flex flex-col gap-2">
+    <!-- Name & Last Name-->
+    <h3 class="text-secondary-900 font-medium text-xl">{{ currentUser.name }} {{ currentUser.last_name }}</h3>
+
+    <!-- Interests -->
+    <div class="flex gap-1 overflow-x-scroll items-start max-w-64">
+      @for (interest of interests; track $index) { @if (interest.followed) {
+      <div class="px-2 py-1 rounded-full text-sm whitespace-nowrap transition-all text-secondary-100 bg-secondary-900">
+        {{ interest.name }}
+      </div>
+      } }
+    </div>
+
+    <!-- Depth -->
+    @if (distanceFromYou === 0) {
+    <div class="text-secondary-900 font-light">Hey, it's you 😄!</div>
+    } @else if (distanceFromYou === 1) {
+    <div class="text-secondary-900 font-light">{{ currentUser.name }} is your friend 🫂</div>
+    } @else {
+    <div class="flex gap-1">
+      <div class="text-secondary-900 font-light">Distance with {{ currentUser.name }} :</div>
+      <div class="text-secondary-900 font-medium">{{ distanceFromYou }}</div>
+    </div>
+
+    }
+
+    <div class="bg-secondary-200 h-[1px] w-full my-3"></div>
+
+    <!-- Followers -->
+    <div class="flex flex-col w-full justify-center items-center">
+      <div class="text-primary-900 text-[50px] font-bold">{{ numberOfFollowers }}</div>
+      <div class="text-primary-900 text-xl font-medium -mt-3">
+        {{ numberOfFollowers && numberOfFollowers > 1 ? "followers" : "follower" }}
+      </div>
+    </div>
+  </div>
+  }
+</div>
