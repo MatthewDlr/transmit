@@ -2,8 +2,8 @@ import { Injectable, WritableSignal, effect, signal } from "@angular/core";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { SupabaseService } from "../../../../shared/services/supabase/supabase.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
-import { AdjacencyNodeList } from "../types/AdjacencyList.class";
-import { GraphNode } from "../types/GraphNode.interface";
+import { AdjacencyNodeList } from "../../types/AdjacencyList.class";
+import { GraphNode } from "../../types/GraphNode.interface";
 import { SimulationLinkDatum } from "d3";
 
 @Injectable({

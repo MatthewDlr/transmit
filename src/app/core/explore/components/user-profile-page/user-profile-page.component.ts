@@ -22,7 +22,7 @@ import {AsyncPipe, KeyValuePipe, NgClass, NgForOf, NgIf, NgOptimizedImage, NgSty
 })
 export class UserProfilePageComponent  implements OnInit{
 
-  externUserId !: number;
+  userID !: string;
   externUser!: UserProfile;
   imageError = false;
   myInterests: Map<number, Interest> = new Map();
@@ -36,29 +36,20 @@ export class UserProfilePageComponent  implements OnInit{
 
   async ngOnInit(): Promise<void> {
     try {
-      this.externUserId = Number(this.route.snapshot.paramMap.get('id')) ?? 0;
+      this.userID = this.route.snapshot.paramMap.get('id') || "" ;
 
-      const user = await this.userService.getExternalProfile(this.externUserId);
+      const user = await this.userService.getProfileOf(this.userID)
       if (user !== null) {
         this.externUser = user;
 
-        const externUserInterests = await this.userService.getExternalUserInterests(this.externUserId);
+        const externUserInterests = await this.userService.getInterestsOf(this.userID);
         externUserInterests.forEach((interest: Interest) => {
           if (interest.followed) {
             this.userInterests.set(interest.id, interest);
           }
         });
 
-        const myInterests = await this.userService.getMyInterests();
-        if (myInterests !== undefined) {
-          myInterests.forEach((interest: Interest) => {
-            if (interest.followed) {
-              this.myInterests.set(interest.id, interest);
-            }
-          });
-        }
-
-        this.isConnectedToUser = await this.doesLinkExistWith(this.externUserId);
+        this.isConnectedToUser = await this.doesLinkExistWith(this.userID);
         if(this.isConnectedToUser){
           console.log("Is connected to user");
         } else {
@@ -84,23 +75,23 @@ export class UserProfilePageComponent  implements OnInit{
     event.target.src = this.defaultImageUrl;
   }
 
-  async follow(externUserId: number) {
-    await this.userService.follow(externUserId);
+  async follow(externUserId: string) {
+    await this.userService.follow(this.userID);
     const removeFriendButton = document.getElementById('unfollowbtn');
     removeFriendButton?.classList.remove('hidden');
     const addFriendButton = document.getElementById('followbtn');
     addFriendButton?.classList.add('hidden');
   }
 
-  async unfollow(externUserId: number) {
-    await this.userService.unfollow(externUserId);
+  async unfollow(externUserId: string) {
+    await this.userService.unfollow(this.userID);
     const removeFriendButton = document.getElementById('unfollowbtn');
     removeFriendButton?.classList.add('hidden');
     const addFriendButton = document.getElementById('followbtn');
     addFriendButton?.classList.remove('hidden');
   }
 
-  async doesLinkExistWith(externUserId: number) {
+  async doesLinkExistWith(externUserId: string) {
     return this.userService.doesLinkExistWith((externUserId));
   }
 }
