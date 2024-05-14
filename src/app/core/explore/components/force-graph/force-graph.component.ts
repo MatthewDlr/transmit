@@ -38,6 +38,9 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
   }
 
   public chart() {
+    // Remove all child elements of #chart except for .icon-svg
+    d3.select("#chart").selectAll("svg:not(.icon-svg)").remove();
+
     // Specify the dimensions of the chart.
     const width = window.innerWidth < 800 ? 700 : 900;
     const height = window.innerWidth < 800 ? 400 : 550;
@@ -114,10 +117,10 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       .selectAll("circle")
       .data(nodes)
       .join("circle")
-      .attr("r", (d) => 1.25 * (d.radius + 1))
-      .attr("refX", (d) => d.radius + 10)
+      .attr("r", (d) => 1.25 * (d.numberOfFollowers + 1))
+      .attr("refX", (d) => d.numberOfFollowers + 10)
       .on("click", function (event, d) {
-        self.sidePeekService.setUser(d.id, d.depth, d.radius);
+        self.sidePeekService.setUser(d.id, d.depth, d.numberOfFollowers);
       })
       .classed("stroke-secondary-50 hover:cursor-pointer", true)
       .classed("fill-primary-950", (d) => d.depth === 0)

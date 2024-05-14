@@ -20,5 +20,6 @@ export class DepthControlComponent {
     if (depth === this.selectedDepth) return;
 
     this.foafService.fetch(depth);
+    this.selectedDepth = depth;
   }
 }
