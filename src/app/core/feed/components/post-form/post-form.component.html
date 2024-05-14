@@ -1,9 +1,9 @@
 <div class="w-full">
   <div style="background-color: #f2f2f2;" class="flex flex-col rounded-xl p-5 w-full h-full gap-2" >
-    <textarea #textInput class="w-full rounded-xl h-1/4 resize-none" placeholder="Time to write some text"></textarea>
+    <textarea #textInput class="w-full rounded-xl h-1/4 resize-none border-black border-2" placeholder="Time to write some text"></textarea>
     <app-image-upload (fileSelected)="onFileSelected($event)"></app-image-upload>
     <button (click)="postPost(textInput.value)"
-            class="rounded-xl bg-primary-200 text-primary-950 w-1/5 p-2 font-bold"
+            class="rounded-xl bg-primary-200 text-primary-950 w-1/5 p-2 font-bold border-2 border-primary-950"
     >Post</button>
   </div>
 </div>

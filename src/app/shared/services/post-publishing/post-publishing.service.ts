@@ -37,7 +37,7 @@ export class PostPublishingService {
       console.log(fileName);
       const {error: updateError} = await this.supabase
         .from('posts')
-        .update({picture_url: `post-images/${fileName}`})
+        .update({picture_url: `${fileName}`})
         .eq('created_by', this.user.id)
         .eq('content', value);
 
