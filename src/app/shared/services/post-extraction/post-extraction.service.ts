@@ -48,8 +48,6 @@ export class PostListService {
       return friendIDs.includes(item.authorNumber);
     })
 
-    console.log("Num of filtered posts: " + filteredPosts.length);
-
     return filteredPosts;
   }
 
