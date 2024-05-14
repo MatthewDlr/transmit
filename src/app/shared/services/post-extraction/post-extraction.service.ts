@@ -2,7 +2,8 @@ import { Injectable, WritableSignal, effect, signal } from "@angular/core";
 import { AuthService } from "../../../auth/services/auth.service";
 import { User } from "@supabase/supabase-js";
 import { SupabaseService } from "../supabase/supabase.service";
-import {Post} from "../../types/Post.type";
+import { Post } from "../../types/Post.type";
+import { UserProfileService } from "../user-profile/user-profile.service";
 
 @Injectable({
   providedIn: "root",
@@ -12,7 +13,7 @@ export class PostListService {
   user: User | undefined;
   postList: WritableSignal<Post[] | null> = signal(null);
 
-  constructor(private auth: AuthService, private supabaseService: SupabaseService) {
+  constructor(private auth: AuthService, private supabaseService: SupabaseService, private userService: UserProfileService) {
     effect(() => {
       this.user = this.auth.userSession()?.user;
       if (!this.user) return;
@@ -41,7 +42,15 @@ export class PostListService {
       image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
     }));
 
-    return posts;
+    const friendIDs = await this.userService.getMyFriendIDs();
+
+    const filteredPosts: Post[] = posts.filter((item: any) => {
+      return friendIDs.includes(item.authorNumber);
+    })
+
+    console.log("Num of filtered posts: " + filteredPosts.length);
+
+    return filteredPosts;
   }
 
 

@@ -1,4 +1,11 @@
-<div *ngFor="let post of posts">
-  <app-post [post]="post"></app-post>
+
+<div *ngIf="posts.length > 0; else emptyPostList">
+  <div *ngFor="let post of posts">
+    <app-post [post]="post"></app-post>
+  </div>
 </div>
+<ng-template #emptyPostList>None of your friends have posted yet.</ng-template>
+
+
+
 
