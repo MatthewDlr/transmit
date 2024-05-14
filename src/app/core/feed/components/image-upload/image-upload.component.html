@@ -1,0 +1,18 @@
+<div>
+  <img [src]="preview" class="rounded-md max-h-[500px] object-cover">
+</div>
+
+<div class="row mt-1">
+  <div class="">
+    <label class="custom-button">
+      <input type="file" accept="image/jpeg, image/jpg, image/png" (change)="selectFile($event)"/>
+    </label>
+  </div>
+
+  <div *ngIf="imageName" class="alert alert-secondary" role="alert">
+    {{ imageName }}
+  </div>
+</div>
+
+
+

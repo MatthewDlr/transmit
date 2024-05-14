@@ -1,11 +1,12 @@
-<div style="background-color: #f2f2f2; border-radius: 15px; padding: 15px; margin: 15px; max-width: 500px">
+<div style="background-color: #f2f2f2;" class="w-full p-4 rounded-xl">
   <img
     *ngIf="post.image"
     [src]="post.image"
     alt="Post image"
+    class="rounded-md max-h-[500px] object-fill"
   />
-  <h2>{{ post.content }}</h2>
-  <hr style="margin: 5px" />
+  <h2 class="mt-1">{{ post.content }}</h2>
+  <hr class="my-2" />
   <div style="display: flex; align-items: start">
     <p
       class="timestamp"

@@ -42,13 +42,17 @@ export class PostListService {
       image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
     }));
 
+    /*
+    posts.forEach((item: any) => {
+      console.log(item.content + ' ' + item.image);
+    });
+    */
+
     const friendIDs = await this.userService.getMyFriendIDs();
 
     const filteredPosts: Post[] = posts.filter((item: any) => {
       return friendIDs.includes(item.authorNumber);
     })
-
-    console.log("Num of filtered posts: " + filteredPosts.length);
 
     return filteredPosts;
   }
