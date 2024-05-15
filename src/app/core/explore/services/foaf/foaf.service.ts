@@ -13,51 +13,47 @@ export class FoafService {
   private supabase: SupabaseClient = this.supabaseService.client;
   private userID: string = this.userService.getUserID();
   private networkUsers: AdjacencyNodeList = new AdjacencyNodeList();
-  isLoading: WritableSignal<boolean> = signal(true);
+  public isLoading: WritableSignal<boolean> = signal(true);
+  public readonly DEFAULT_MAX_DEPTH = 2;
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
-    this.isLoading.set(true);
-    this.getFriendsOfFriends(this.userID, 0, 2).then(() => {
-      this.isLoading.set(false);
-
-      this.subscribeToDeletions();
-      this.subscribeToInserts();
-    });
+    this.fetch(this.DEFAULT_MAX_DEPTH);
+    //this.subscribeToDeletions();
+    //this.subscribeToInserts();
 
     effect(() => {
-      const isLoading = this.isLoading();
-      if (!isLoading) {
-        console.log(this.networkUsers.getNodes());
+      if (!this.isLoading()) {
+        console.log(this.networkUsers.getUsers());
         console.log(this.networkUsers.getLinks());
       }
     });
   }
 
-  private async getFriendsOfFriends(userID: string, depth: number, maxDepth: number) {
-    if (depth >= maxDepth) {
-      return;
-    }
-
-    const friends = await this.getFriendsOf(userID, depth);
-    this.networkUsers.processedUsers.add(userID);
-    //this.networkUsers.print();
-
-    const promises = friends.map((friend) => {
-      if (this.networkUsers.processedUsers.has(friend)) return Promise.resolve();
-      return this.getFriendsOfFriends(friend, depth + 1, maxDepth);
-    });
-
-    await Promise.all(promises);
+  public async fetch(maxDepth: number) {
+    this.isLoading.set(true);
+    this.networkUsers = new AdjacencyNodeList();
+    await this.mapFriendsOf(this.userID, 0, maxDepth);
+    this.isLoading.set(false);
   }
 
-  private async getFriendsOf(userID: string, depth: number): Promise<string[]> {
+  private async mapFriendsOf(userID: string, depth: number, maxDepth: number) {
+    if (depth >= maxDepth || this.networkUsers.processedUsers.has(userID)) return;
+
+    const friendsIDs = await this.fetchFriendsIdOf(userID, depth);
+    this.networkUsers.addFriends(userID, friendsIDs, depth);
+
+    this.networkUsers.getUsers().forEach((user) => {
+      this.mapFriendsOf(user.id, depth + 1, maxDepth);
+    });
+  }
+
+  private async fetchFriendsIdOf(userID: string, depth: number): Promise<string[]> {
     let { data: followed_users_id, error } = await this.supabase.from("following").select("followed_user_id").eq("user_id", userID);
 
     if (error) throw Error(error.message);
-    const friendsID: string[] = followed_users_id ? followed_users_id.map((friend) => friend.followed_user_id).flat() : [];
+    const friendsIDs: string[] = followed_users_id ? followed_users_id.map((friend) => friend.followed_user_id).flat() : [];
 
-    this.networkUsers.addLinks(userID, friendsID, depth);
-    return friendsID;
+    return friendsIDs;
   }
 
   private subscribeToDeletions() {
@@ -83,6 +79,6 @@ export class FoafService {
   }
 
   public getNodes(): GraphNode[] {
-    return this.networkUsers.getNodes();
+    return this.networkUsers.getUsers();
   }
 }

@@ -4,7 +4,8 @@ import { User } from "@supabase/supabase-js";
 import { SupabaseService } from "../supabase/supabase.service";
 import { UserProfile } from "../../types/Profile.type";
 import { Interest } from "../../types/Interest.type";
-import {Post} from "../../types/Post.type";
+import { Post } from "../../types/Post.type";
+
 
 @Injectable({
   providedIn: "root",
@@ -35,7 +36,7 @@ export class UserProfileService {
     return this.user.id;
   }
 
-  public async getProfileOf(userID : string): Promise<UserProfile> {
+  public async getProfileOf(userID: string): Promise<UserProfile> {
     const { data, error } = await this.supabase
       .from("profiles")
       .select("updated_at, name, last_name, avatar_url")
@@ -49,12 +50,9 @@ export class UserProfileService {
     return user;
   }
 
-  public async getInterestsOf(userID : string): Promise<Interest[]> {
+  public async getInterestsOf(userID: string): Promise<Interest[]> {
     let { data: interests_list, error: error1 } = await this.supabase.from("interests_list").select("*");
-    let { data: interests, error: error2 } = await this.supabase
-      .from("interests")
-      .select("interest_id")
-      .eq("profile_id", userID);
+    let { data: interests, error: error2 } = await this.supabase.from("interests").select("interest_id").eq("profile_id", userID);
 
     if (error1) throw Error(error1.message);
     if (error2) throw Error(error2.message);
@@ -124,34 +122,26 @@ export class UserProfileService {
     return !(data1?.length === 0 && data2.length === 0);
   }
 
-  public async follow(followedUserId:  string): Promise<void> {
+  public async follow(userID: string): Promise<boolean> {
     if (!this.user) throw new Error("User is not logged in");
 
-    const { error } = await this.supabase
-      .from('following')
-      .insert([
-        { user_id: this.user.id, followed_user_id: followedUserId }
-      ]);
+    const { error } = await this.supabase.from("following").insert([{ user_id: this.user.id, followed_user_id: userID }]);
 
-    if (error) throw error;
+    if (error) return false;
+    return true;
   }
 
-  public async unfollow(followedUserId: string): Promise<void> {
+  public async unfollow(followedUserId: string): Promise<boolean> {
     if (!this.user) throw new Error("User is not logged in");
 
-    const {error: error1 } = await this.supabase
+    const { error: error } = await this.supabase
       .from("following")
       .delete()
       .eq("user_id", this.user.id)
       .eq("followed_user_id", followedUserId);
 
-    const { error: error2 } = await this.supabase
-      .from("following")
-      .delete()
-      .eq("user_id", followedUserId)
-      .eq("followed_user_id", this.user.id);
-
-    if (error1 || error2) throw error1 || error2;
+    if (error) return false;
+    return true;
   }
 
   public async getMyFriendIDs(): Promise<string[]> {
@@ -175,5 +165,24 @@ export class UserProfileService {
     return [...new Set(friendIDs)];
   }
 
+  public async getMyFriendIDs(): Promise<string[]> {
+    if (!this.user) throw new Error("User is not logged in");
 
+    const { data: data1, error: error1 } = await this.supabase
+      .from("following")
+      .select("followed_user_id")
+      .eq("user_id", this.user.id);
+
+    const { data: data2, error: error2 } = await this.supabase
+      .from("following")
+      .select("user_id")
+      .eq("followed_user_id", this.user.id);
+
+    let friendIDs: string[];
+    friendIDs = [
+      ...(data1 || []).map((item) => item.followed_user_id).filter((id) => true),
+      ...(data2 || []).map((item) => item.user_id).filter((id) => typeof id === "string"),
+    ];
+    return [...new Set(friendIDs)];
+  }
 }
