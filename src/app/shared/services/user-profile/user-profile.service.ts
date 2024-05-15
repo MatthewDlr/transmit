@@ -6,6 +6,7 @@ import { UserProfile } from "../../types/Profile.type";
 import { Interest } from "../../types/Interest.type";
 import { Post } from "../../types/Post.type";
 
+
 @Injectable({
   providedIn: "root",
 })
@@ -141,6 +142,27 @@ export class UserProfileService {
 
     if (error) return false;
     return true;
+  }
+
+  public async getMyFriendIDs(): Promise<string[]> {
+    if (!this.user) throw new Error("User is not logged in");
+
+    const { data: data1, error: error1 } = await this.supabase
+      .from("following")
+      .select("followed_user_id")
+      .eq("user_id", this.user.id);
+
+    const { data: data2, error: error2 } = await this.supabase
+      .from("following")
+      .select("user_id")
+      .eq("followed_user_id", this.user.id);
+
+    let friendIDs: string[];
+    friendIDs = [
+      ...(data1 || []).map(item => item.followed_user_id).filter(id => true),
+      ...(data2 || []).map(item => item.user_id).filter(id => typeof id === 'string')
+    ];
+    return [...new Set(friendIDs)];
   }
 
   public async getMyFriendIDs(): Promise<string[]> {
