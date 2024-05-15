@@ -1,16 +1,15 @@
-<div>
+<div *ngIf="preview" class="mb-2">
   <img [src]="preview" class="rounded-md max-h-[500px] object-cover">
 </div>
 
-<div class="row mt-1">
-  <div class="">
+<div class="">
+  <div class="flex flex-row items-center">
     <label class="custom-button">
-      <input type="file" accept="image/jpeg, image/jpg, image/png" (change)="selectFile($event)"/>
+      <input type="file" accept="image/jpeg, image/jpg, image/png" (change)="selectFile($event)" class="text-[0]"/>
     </label>
-  </div>
-
-  <div *ngIf="imageName" class="alert alert-secondary" role="alert">
-    {{ imageName }}
+    <div *ngIf="imageName" class="" role="alert">
+      {{ imageName }}
+    </div>
   </div>
 </div>
 

@@ -26,9 +26,9 @@ export class ImageUploadComponent implements OnInit {
   }
 
   selectFile(event: any): void {
-    this.imageName = '';
     this.preview = '';
     this.file = event.target.files[0];
+    this.imageName = event.target.files[0].name;
 
     if (this.file && (this.file.type === 'image/jpeg' || this.file.type === 'image/jpg' || this.file.type === 'image/png')) {
       const reader = new FileReader();
@@ -42,6 +42,12 @@ export class ImageUploadComponent implements OnInit {
       console.log('Invalid file type. Please select a JPG, JPEG or PNG file.');
       this.file = null;
     }
+  }
+
+  reset(): void {
+    this.imageName = '';
+    this.preview = '';
+    this.file = null;
   }
 
 }
