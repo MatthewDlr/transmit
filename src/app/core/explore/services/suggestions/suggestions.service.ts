@@ -5,11 +5,11 @@ import { UserProfile } from "../../../../shared/types/Profile.type";
   providedIn: "root",
 })
 export class SuggestionsService {
-  suggestions: WritableSignal<UserProfile[]> = signal([]);
+  suggestions: WritableSignal<Set<UserProfile>> = signal(new Set());
 
   constructor() {}
 
   public addSuggestion(user: UserProfile) {
-    this.suggestions().push(user);
+    this.suggestions().add(user);
   }
 }
