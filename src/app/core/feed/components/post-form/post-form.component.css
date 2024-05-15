@@ -1,0 +1,10 @@
+#popup {
+  height: 0;
+  overflow: hidden;
+  transition: height 1s ease-out;
+}
+
+#popup.popup-visible {
+  height: 35px;
+  transition: height 1s ease-in;
+}
