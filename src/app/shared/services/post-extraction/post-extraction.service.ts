@@ -57,5 +57,33 @@ export class PostListService {
     return filteredPosts;
   }
 
+  async isPostLiked(postId: number): Promise<boolean> {
+    const { data, error } = await this.supabase
+      .from("likes")
+      .select()
+      .eq("post_liked", postId)
+      .eq("liked_by", this.user?.id);
+
+    if (error) throw Error(error.message);
+    return data?.length >= 1;
+  }
+
+  async likePost(id: number) {
+    const { error} = await this.supabase
+      .from("likes")
+      .insert([
+        {post_liked: id, liked_by: this.user?.id},
+      ]);
+    if (error) throw Error(error.message);
+  }
+
+  async unlikePost(id: number) {
+    const { error} = await this.supabase
+      .from("likes")
+      .delete()
+      .eq("post_liked", id)
+      .eq("liked_by", this.user?.id);
+    if (error) throw Error(error.message);
+  }
 
 }
