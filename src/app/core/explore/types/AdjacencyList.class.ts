@@ -3,46 +3,29 @@ import { GraphNode } from "./GraphNode.interface";
 
 export class AdjacencyNodeList {
   private nodes: Map<GraphNode, Set<string>>;
-  public processedUsers: Set<string> = new Set();
 
   constructor() {
     this.nodes = new Map();
   }
 
   // Add new user in the keys
-  public addUser(id: string, depth: number, numberOfFollowers = 0): GraphNode {
-    this.nodes.forEach((_, user) => {
-      if (user.id === id) return;
-    });
+  public addUser(userID: string, depth: number, numberOfFollowers = 0): GraphNode {
+    let user: GraphNode | undefined = this.getUserFromID(userID);
+    if (user) return user;
 
-    const userNode: GraphNode = { id, depth: depth, numberOfFollowers: numberOfFollowers };
-    this.nodes.set(userNode, new Set());
-    return userNode;
+    user = { id: userID, depth: depth, numberOfFollowers: numberOfFollowers };
+    this.nodes.set(user, new Set());
+    return user;
   }
 
   // Add a new friend (target) for a given person (source)
-  public addFriends(userID: string, friendsToAdd: string[], userDepth: number) {
-    let user: GraphNode | undefined = this.getNode(userID);
-    if (!user) user = this.addUser(userID, userDepth);
-
-    friendsToAdd.forEach((friendID) => {
-      this.nodes.get(user!)!.add(friendID);
-      this.incrementFriendsCount(friendID, userDepth + 1);
-    });
-
-    this.processedUsers.add(userID)
-  }
-
-  // Register a new follower for a given user ID
-  private incrementFriendsCount(userID: string, userDepth: number) {
-    let user: GraphNode | undefined = this.getNode(userID);
-    if (!user) user = this.addUser(userID, userDepth);
-
-    user.numberOfFollowers++;
+  public addFriend(user: GraphNode, friend: GraphNode) {
+    this.nodes.get(user)!.add(friend.id);
+    friend.numberOfFollowers += 1;
   }
 
   // Get a user (key) with his ID
-  private getNode(id: string): GraphNode | undefined {
+  public getUserFromID(id: string): GraphNode | undefined {
     return Array.from(this.nodes.keys()).find((user) => user.id === id);
   }
 
@@ -68,5 +51,9 @@ export class AdjacencyNodeList {
 
   public print() {
     console.log(this.nodes);
+  }
+
+  public clear() {
+    this.nodes.clear();
   }
 }
