@@ -11,7 +11,7 @@ import { CommonModule } from "@angular/common";
 })
 export class DepthControlComponent {
   isExpanded: boolean = false;
-  selectedDepth: number = 2;
+  selectedDepth: number = this.foafService.DEFAULT_MAX_DEPTH;
   availableDepths: number[] = [1, 2, 3, 4, 5];
 
   constructor(private foafService: FoafService) {}
