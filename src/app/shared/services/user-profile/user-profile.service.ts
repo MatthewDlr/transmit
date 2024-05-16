@@ -6,7 +6,6 @@ import { UserProfile } from "../../types/Profile.type";
 import { Interest } from "../../types/Interest.type";
 import { Post } from "../../types/Post.type";
 
-
 @Injectable({
   providedIn: "root",
 })
@@ -157,9 +156,15 @@ export class UserProfileService {
 
     let friendIDs: string[];
     friendIDs = [
-      ...(data1 || []).map(item => item.followed_user_id).filter(id => true),
-      ...(data2 || []).map(item => item.user_id).filter(id => typeof id === 'string')
+      ...(data1 || []).map((item) => item.followed_user_id).filter((id) => true),
+      ...(data2 || []).map((item) => item.user_id).filter((id) => typeof id === "string"),
     ];
     return [...new Set(friendIDs)];
+  }
+
+  public async deleteUser(userID: string): Promise<string> {
+    const { error } = await this.supabase.from("profiles").delete().eq("id", userID);
+    if (error) return error.message;
+    return "OK";
   }
 }

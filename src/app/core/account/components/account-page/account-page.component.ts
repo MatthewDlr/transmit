@@ -5,6 +5,7 @@ import { UserProfile } from "../../../../shared/types/Profile.type";
 import { FormsModule } from "@angular/forms";
 import { Interest } from "../../../../shared/types/Interest.type";
 import { CommonModule } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-account-page",
@@ -18,7 +19,7 @@ export class AccountPageComponent {
   interests: Map<number, Interest> = new Map();
   updateStatus: string = "OK";
 
-  constructor(private userService: UserProfileService) {
+  constructor(private userService: UserProfileService, private router: Router) {
     effect(() => {
       const user = this.userService.userProfile();
       if (user !== null) this.user = user;
@@ -41,5 +42,14 @@ export class AccountPageComponent {
     } else {
       this.userService.unfollowInterest(interest);
     }
+  }
+
+  public async deleteAccount() {
+    const confirm = window.confirm("By clicking on 'OK', your account and all your data will be deleted immediately.");
+    if (!confirm) return;
+
+    const result = await this.userService.deleteUser(this.user.id);
+    if (result === "OK") this.router.navigate(["/login"]);
+    
   }
 }
