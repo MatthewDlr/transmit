@@ -46,7 +46,6 @@ export class UserProfileService {
     if (!data) throw new Error("Seems that user does not exist in database");
 
     const user = data as UserProfile;
-    console.log("user:", user);
     return user;
   }
 
@@ -66,7 +65,6 @@ export class UserProfileService {
         followed: user_interests.includes(interest.id),
       })) || [];
 
-    console.log(userInterests);
     return userInterests;
   }
 

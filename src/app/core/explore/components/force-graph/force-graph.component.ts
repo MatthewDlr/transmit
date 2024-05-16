@@ -14,7 +14,7 @@ import { DepthControlComponent } from "../depth-control/depth-control.component"
   templateUrl: "./force-graph.component.html",
   styleUrl: "./force-graph.component.css",
 })
-export class ForceGraphComponent implements OnDestroy, OnChanges {
+export class ForceGraphComponent implements OnDestroy {
   links: SimulationLinkDatum<GraphNode>[] = [];
   nodes: GraphNode[] = [];
   private destroy$ = new Subject<void>();
@@ -31,19 +31,13 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes["links"] || changes["nodes"]) {
-      this.chart();
-    }
-  }
-
   public chart() {
     // Remove all child elements of #chart except for .icon-svg
     d3.select("#chart").selectAll("svg:not(.icon-svg)").remove();
 
     // Specify the dimensions of the chart.
-    const width = window.innerWidth < 800 ? 700 : 900;
-    const height = window.innerWidth < 800 ? 400 : 550;
+    const width = 1000;
+    const height = 1000;
     const self = this;
 
     // The force simulation mutates links and nodes, so create a copy
@@ -124,10 +118,10 @@ export class ForceGraphComponent implements OnDestroy, OnChanges {
       })
       .classed("stroke-secondary-50 hover:cursor-pointer", true)
       .classed("fill-primary-950", (d) => d.depth === 0)
-      .classed("fill-primary-800 opacity-80", (d) => d.depth === 1)
-      .classed("fill-primary-600 opacity-60", (d) => d.depth === 2)
-      .classed("fill-primary-400 opacity-40", (d) => d.depth === 3)
-      .classed(" fill-primary-200 opacity-20", (d) => d.depth === 4);
+      .classed("fill-primary-800", (d) => d.depth === 1)
+      .classed("fill-primary-600", (d) => d.depth === 2)
+      .classed("fill-primary-400", (d) => d.depth === 3)
+      .classed(" fill-primary-200", (d) => d.depth === 4);
 
     node.append("title").text("Open in side peek");
 

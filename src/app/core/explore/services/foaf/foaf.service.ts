@@ -11,10 +11,9 @@ import { SimulationLinkDatum } from "d3";
 })
 export class FoafService {
   private supabase: SupabaseClient = this.supabaseService.client;
-  private userID: string = this.userService.getUserID();
-  private networkUsers: AdjacencyNodeList = new AdjacencyNodeList();
+  private userGraph: AdjacencyNodeList = new AdjacencyNodeList();
   public isLoading: WritableSignal<boolean> = signal(true);
-  public readonly DEFAULT_MAX_DEPTH = 2;
+  public readonly DEFAULT_MAX_DEPTH = 3;
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
     this.fetch(this.DEFAULT_MAX_DEPTH);
@@ -23,31 +22,42 @@ export class FoafService {
 
     effect(() => {
       if (!this.isLoading()) {
-        console.log(this.networkUsers.getUsers());
-        console.log(this.networkUsers.getLinks());
+        this.userGraph.print();
       }
     });
   }
 
   public async fetch(maxDepth: number) {
     this.isLoading.set(true);
-    this.networkUsers = new AdjacencyNodeList();
-    await this.mapFriendsOf(this.userID, 0, maxDepth);
+    this.userGraph.clear();
+
+    const mainUser: string = this.userService.getUserID();
+    this.userGraph.addUser(mainUser, 0);
+    await this.mapFriendsOf(mainUser, maxDepth);
+
     this.isLoading.set(false);
   }
 
-  private async mapFriendsOf(userID: string, depth: number, maxDepth: number) {
-    if (depth >= maxDepth || this.networkUsers.processedUsers.has(userID)) return;
+  private async mapFriendsOf(userID: string, maxDepth: number) {
+    const idsToFetch: string[] = [userID];
+    const fetchedUsers: Set<string> = new Set();
 
-    const friendsIDs = await this.fetchFriendsIdOf(userID, depth);
-    this.networkUsers.addFriends(userID, friendsIDs, depth);
+    while (idsToFetch.length > 0) {
+      const currentUser: GraphNode | undefined = this.userGraph.getUserFromID(idsToFetch.pop()!);
+      if (!currentUser || fetchedUsers.has(currentUser.id) || currentUser.depth >= maxDepth) return;
 
-    this.networkUsers.getUsers().forEach((user) => {
-      this.mapFriendsOf(user.id, depth + 1, maxDepth);
-    });
+      const friendsID = await this.fetchFriendsIdOf(currentUser.id);
+      friendsID.forEach((friendID) => {
+        const friend = this.userGraph.addUser(friendID, currentUser.depth + 1);
+        this.userGraph.addFriend(currentUser, friend);
+        if (!fetchedUsers.has(friendID)) idsToFetch.push(friendID);
+      });
+
+      fetchedUsers.add(currentUser.id);
+    }
   }
 
-  private async fetchFriendsIdOf(userID: string, depth: number): Promise<string[]> {
+  private async fetchFriendsIdOf(userID: string): Promise<string[]> {
     let { data: followed_users_id, error } = await this.supabase.from("following").select("followed_user_id").eq("user_id", userID);
 
     if (error) throw Error(error.message);
@@ -75,10 +85,10 @@ export class FoafService {
   }
 
   public getLinks(): SimulationLinkDatum<GraphNode>[] {
-    return this.networkUsers.getLinks();
+    return this.userGraph.getLinks();
   }
 
   public getNodes(): GraphNode[] {
-    return this.networkUsers.getUsers();
+    return this.userGraph.getUsers();
   }
 }
