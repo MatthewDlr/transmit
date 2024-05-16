@@ -23,13 +23,15 @@ export class SidePeekComponent {
       this.interests = this.sidePeekService.userInterests();
       this.distanceFromYou = this.sidePeekService.distanceFromYou();
       this.numberOfFollowers = this.sidePeekService.numberOfFollowers();
+
+      console.log(this.currentUser);
     });
   }
 
   openProfile() {
-    const id = this.currentUser?.id;
-    if (!id) return;
+    const id = this.currentUser!.id;
+    if (!id) throw Error("Current user has no id :/");
 
-    this.router.navigate(["/user/" + id]);
+    this.router.navigate(["explore/user/" + id]);
   }
 }

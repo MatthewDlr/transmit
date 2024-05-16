@@ -39,7 +39,7 @@ export class UserProfileService {
   public async getProfileOf(userID: string): Promise<UserProfile> {
     const { data, error } = await this.supabase
       .from("profiles")
-      .select("updated_at, name, last_name, avatar_url")
+      .select("id, updated_at, name, last_name, avatar_url")
       .eq("id", userID)
       .single();
     if (error) throw error;

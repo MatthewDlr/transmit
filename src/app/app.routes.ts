@@ -23,10 +23,10 @@ export const routes: Routes = [
   {
     path: "account",
     loadComponent: () => import("./core/account/components/account-page/account-page.component").then((m) => m.AccountPageComponent),
-    //canActivate: [isLoggedIn],
+    canActivate: [isLoggedIn],
   },
   {
-    path: 'user/:id',
+    path: 'explore/user/:id',
     component: UserProfilePageComponent
   },
   {
