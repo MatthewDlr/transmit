@@ -100,22 +100,28 @@
       </div>
     </div>
 
-    <div>
+    <div class="w-full">
+      <div class="">
       <label
         for="pp"
         class="block font-medium leading-6 text-secondary-900"
         >Profile picture URL</label
       >
-      <div class="mt-1">
+      <div class="mt-1 flex flex-row gap-2" >
         <input
           type="text"
           name="pp"
           id="pp"
           (blur)="saveUserProfile()"
           [(ngModel)]="user.avatar_url"
-          class="block w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+          class="w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
           placeholder="https://storage.iseplife.fr/img/usr/..."
         />
+        <div class="w-[14%] text-center">
+          <label for="upload-photo" class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300">Upload picture</label>
+          <input type="file" name="photo" id="upload-photo" class="opacity-0 z-[-1] absolute" (change)="selectFile($event)"/>
+        </div>
+      </div>
       </div>
     </div>
 

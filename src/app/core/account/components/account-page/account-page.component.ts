@@ -6,6 +6,7 @@ import { FormsModule } from "@angular/forms";
 import { Interest } from "../../../../shared/types/Interest.type";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
+import {PostPublishingService} from "../../../../shared/services/post-publishing/post-publishing.service";
 
 @Component({
   selector: "app-account-page",
@@ -18,8 +19,9 @@ export class AccountPageComponent {
   user!: UserProfile;
   interests: Map<number, Interest> = new Map();
   updateStatus: string = "OK";
+  selectedFile: File | null = null;
 
-  constructor(private userService: UserProfileService, private router: Router) {
+  constructor(private userService: UserProfileService, private router: Router, private postService: PostPublishingService) {
     effect(() => {
       const user = this.userService.userProfile();
       if (user !== null) this.user = user;
@@ -50,6 +52,24 @@ export class AccountPageComponent {
 
     const result = await this.userService.deleteUser(this.user.id);
     if (result === "OK") this.router.navigate(["/login"]);
-    
+
   }
+
+  async selectFile(event: any) {
+    this.selectedFile = event.target.files[0];
+    if(this.selectedFile !== null){
+      console.log("file selected : " + this.selectedFile.name)
+      if (await this.postService.uploadAvatar(this.selectedFile)){
+        const url = await this.userService.getUserAvatarUrl();
+        if(url !== null){
+          console.log("URL found : " + url);
+          this.user.avatar_url = url;
+        } else {
+          console.log("No avatar_url retrieved");
+        }
+      }
+    }
+  }
+
+
 }

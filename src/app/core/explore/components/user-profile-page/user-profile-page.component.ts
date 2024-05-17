@@ -1,4 +1,4 @@
-import {Component, effect, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UserProfile} from "../../../../shared/types/Profile.type";
 import {Interest} from "../../../../shared/types/Interest.type";
 import {UserProfileService} from "../../../../shared/services/user-profile/user-profile.service";
@@ -75,7 +75,7 @@ export class UserProfilePageComponent  implements OnInit{
     event.target.src = this.defaultImageUrl;
   }
 
-  async follow(externUserId: string) {
+  async follow() {
     await this.userService.follow(this.userID);
     const removeFriendButton = document.getElementById('unfollowbtn');
     removeFriendButton?.classList.remove('hidden');
@@ -83,7 +83,7 @@ export class UserProfilePageComponent  implements OnInit{
     addFriendButton?.classList.add('hidden');
   }
 
-  async unfollow(externUserId: string) {
+  async unfollow() {
     await this.userService.unfollow(this.userID);
     const removeFriendButton = document.getElementById('unfollowbtn');
     removeFriendButton?.classList.add('hidden');
