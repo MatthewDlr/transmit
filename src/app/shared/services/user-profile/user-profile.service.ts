@@ -62,6 +62,11 @@ export class UserProfileService {
     })) || [];
   }
 
+  public async getMyInterests(){
+    if (!this.user) throw Error("User is not connected");
+    return await this.getInterestsOf(this.user.id);
+  }
+
   public async followInterest(interest: Interest) {
     const { data, error } = await this.supabase
       .from("interests")

@@ -40,9 +40,9 @@ export class AccountPageComponent {
   public async toggleInterest(interest: Interest) {
     interest.followed = !interest.followed;
     if (interest.followed) {
-      this.userService.followInterest(interest);
+      await this.userService.followInterest(interest);
     } else {
-      this.userService.unfollowInterest(interest);
+      await this.userService.unfollowInterest(interest);
     }
   }
 

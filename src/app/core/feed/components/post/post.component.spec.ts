@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PostViewComponent } from './post-view.component';
+import { PostViewComponent } from './post.component.ts';
 
 describe('PostViewComponent', () => {
   let component: PostViewComponent;
@@ -11,7 +11,7 @@ describe('PostViewComponent', () => {
       imports: [PostViewComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(PostViewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

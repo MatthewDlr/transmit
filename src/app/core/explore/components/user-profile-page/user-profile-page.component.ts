@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {UserProfile} from "../../../../shared/types/Profile.type";
 import {Interest} from "../../../../shared/types/Interest.type";
 import {UserProfileService} from "../../../../shared/services/user-profile/user-profile.service";
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {AsyncPipe, KeyValuePipe, NgClass, NgForOf, NgIf, NgOptimizedImage, NgStyle} from "@angular/common";
 
 @Component({
@@ -30,7 +30,7 @@ export class UserProfilePageComponent  implements OnInit{
   defaultImageUrl = './assets/images/defpfp.png';
   isConnectedToUser: boolean = false;
 
-  constructor(private userService: UserProfileService, private route: ActivatedRoute) {
+  constructor(private userService: UserProfileService, private route: ActivatedRoute, private router: Router) {
 
   }
 
@@ -40,6 +40,12 @@ export class UserProfilePageComponent  implements OnInit{
 
       const user = await this.userService.getProfileOf(this.userID)
       if (user !== null) {
+
+        if(this.userID === this.userService.getUserID()) {
+          this.router.navigate(["/account"]);
+          return;
+        }
+
         this.externUser = user;
 
         const externUserInterests = await this.userService.getInterestsOf(this.userID);
@@ -48,6 +54,13 @@ export class UserProfilePageComponent  implements OnInit{
             this.userInterests.set(interest.id, interest);
           }
         });
+
+        const myInterests = await this.userService.getMyInterests();
+        myInterests.forEach((interest: Interest) => {
+          if (interest.followed) {
+            this.myInterests.set(interest.id, interest);
+          }
+        })
 
         this.isConnectedToUser = await this.doesLinkExistWith(this.userID);
         if(this.isConnectedToUser){
@@ -64,7 +77,9 @@ export class UserProfilePageComponent  implements OnInit{
           addFriendButton?.classList.remove('hidden');
         }
 
+
       }
+
     } catch (error) {
       console.error(error);
     }
