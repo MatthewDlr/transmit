@@ -49,6 +49,13 @@ export class UserProfilePageComponent  implements OnInit{
           }
         });
 
+        const myInterests = await this.userService.getMyInterests();
+        myInterests.forEach((interest: Interest) => {
+          if (interest.followed) {
+            this.myInterests.set(interest.id, interest);
+          }
+        })
+
         this.isConnectedToUser = await this.doesLinkExistWith(this.userID);
         if(this.isConnectedToUser){
           console.log("Is connected to user");
