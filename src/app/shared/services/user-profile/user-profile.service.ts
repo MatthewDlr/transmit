@@ -48,7 +48,7 @@ export class UserProfileService {
 
   public async getInterestsOf(userID: string): Promise<Interest[]> {
     let { data: interests_list, error: error1 } = await this.supabase.from("interests_list").select("*");
-    let { data: interests, error: error2 } = await this.supabase.from("interests").select("interest_id").eq("profile_id", userID);
+    let { data: interests, error: error2 } = await this.supabase.from("interests").select("interest_id").eq("user_id", userID);
 
     if (error1) throw Error(error1.message);
     if (error2) throw Error(error2.message);
@@ -65,7 +65,7 @@ export class UserProfileService {
   public async followInterest(interest: Interest) {
     const { data, error } = await this.supabase
       .from("interests")
-      .insert([{ profile_id: this.user?.id, interest_id: interest.id }])
+      .insert([{ user_id: this.user?.id, interest_id: interest.id }])
       .select();
 
     if (error) throw Error(error.message);
