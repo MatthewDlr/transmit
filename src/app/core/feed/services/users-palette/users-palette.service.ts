@@ -13,7 +13,7 @@ export class UsersPaletteService {
   constructor(private supabaseService: SupabaseService) {}
 
   async search(query: string) {
-    const { data, error } = await this.supabase.from("profiles").select().textSearch("name, lastname", query);
+    const { data, error } = await this.supabase.from("profiles").select().ilike("name", `%${query}%`);
 
     if (error) throw Error(error.message);
     console.log(data);

@@ -19,9 +19,9 @@ export class AuthService {
       console.log("userSession:", this.userSession());
     });
   }
-
   public signIn(email: string): Promise<AuthOtpResponse> {
-    return this.supabase.auth.signInWithOtp({ email });
+    const redirectURI = window.location.href.includes("localhost") ? "http://localhost:4200" : "https://transmit-project.vercel.app";
+    return this.supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectURI } });
   }
 
   public signOut() {

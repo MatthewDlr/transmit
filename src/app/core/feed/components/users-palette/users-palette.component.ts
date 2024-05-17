@@ -20,10 +20,17 @@ export class UsersPaletteComponent implements AfterViewInit {
     });
   }
 
-  @HostListener("document:keydown.enter", ["$event"])
   @HostListener("document:keydown.escape", ["$event"])
   onKeydownHandlerEscape() {
     this.closeModal();
+  }
+
+  @HostListener("document:keydown.enter", ["$event"])
+  openFirstUser() {
+    const userID = this.users.at(0)?.id;
+    if (!userID) return;
+
+    this.openUserPage(userID);
   }
 
   ngAfterViewInit(): void {
@@ -31,6 +38,11 @@ export class UsersPaletteComponent implements AfterViewInit {
   }
 
   public searchUser(query: string) {
+    if (query.trim() === "") {
+      this.users = [];
+      return;
+    }
+
     this.usersPaletteService.search(query);
   }
 
@@ -39,7 +51,7 @@ export class UsersPaletteComponent implements AfterViewInit {
   }
 
   public openUserPage(id: string) {
-    this.closeModal()
+    this.closeModal();
     this.router.navigate(["/explore/user/" + id]);
   }
 }
