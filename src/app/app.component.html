@@ -1,7 +1,13 @@
-<div class="w-full h-dvh bg-secondary-50">
+@if (usersPaletteService.isEnabled()) {
+<app-users-palette></app-users-palette>
+}
+
+<div
+  class="w-full h-dvh bg-secondary-50"
+  [ngClass]="usersPaletteService.isEnabled() ? 'fixed bottom-0 left-0 right-0 top-0 overflow-hidden' : 'overflow-scroll'"
+>
   @defer (when router.url) { @if (!router.url.includes("/login")) {
   <app-header></app-header>
   } }
   <router-outlet></router-outlet>
 </div>
-
