@@ -12,6 +12,8 @@ import { Router } from "@angular/router";
 })
 export class UsersPaletteComponent implements AfterViewInit {
   users: UserProfile[] = [];
+  @ViewChild("search") searchInput!: ElementRef;
+
   constructor(private usersPaletteService: UsersPaletteService, private router: Router) {
     effect(() => {
       this.users = this.usersPaletteService.searchResults();
@@ -24,9 +26,12 @@ export class UsersPaletteComponent implements AfterViewInit {
     this.closeModal();
   }
 
-  @ViewChild("search") searchInput!: ElementRef;
   ngAfterViewInit(): void {
     this.searchInput.nativeElement.focus();
+  }
+
+  public searchUser(query: string) {
+    this.usersPaletteService.search(query);
   }
 
   public closeModal() {
@@ -34,6 +39,7 @@ export class UsersPaletteComponent implements AfterViewInit {
   }
 
   public openUserPage(id: string) {
-    this.router.navigate(["/explore/user" + id]);
+    this.closeModal()
+    this.router.navigate(["/explore/user/" + id]);
   }
 }
