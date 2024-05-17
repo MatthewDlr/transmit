@@ -1,10 +1,9 @@
-import { Injectable, WritableSignal, effect, signal } from "@angular/core";
-import { AuthService } from "../../../auth/services/auth.service";
-import { User } from "@supabase/supabase-js";
-import { SupabaseService } from "../supabase/supabase.service";
-import { UserProfile } from "../../types/Profile.type";
-import { Interest } from "../../types/Interest.type";
-import { Post } from "../../types/Post.type";
+import {effect, Injectable, signal, WritableSignal} from "@angular/core";
+import {AuthService} from "../../../auth/services/auth.service";
+import {User} from "@supabase/supabase-js";
+import {SupabaseService} from "../supabase/supabase.service";
+import {UserProfile} from "../../types/Profile.type";
+import {Interest} from "../../types/Interest.type";
 
 @Injectable({
   providedIn: "root",
@@ -44,8 +43,7 @@ export class UserProfileService {
     if (error) throw error;
     if (!data) throw new Error("Seems that user does not exist in database");
 
-    const user = data as UserProfile;
-    return user;
+    return data as UserProfile;
   }
 
   public async getInterestsOf(userID: string): Promise<Interest[]> {
@@ -57,14 +55,11 @@ export class UserProfileService {
 
     const user_interests: number[] = interests?.map((interest) => interest.interest_id) || [];
 
-    const userInterests =
-      interests_list?.map((interest) => ({
-        id: interest.id,
-        name: interest.name,
-        followed: user_interests.includes(interest.id),
-      })) || [];
-
-    return userInterests;
+    return interests_list?.map((interest) => ({
+      id: interest.id,
+      name: interest.name,
+      followed: user_interests.includes(interest.id),
+    })) || [];
   }
 
   public async followInterest(interest: Interest) {
@@ -124,8 +119,8 @@ export class UserProfileService {
 
     const { error } = await this.supabase.from("following").insert([{ user_id: this.user.id, followed_user_id: userID }]);
 
-    if (error) return false;
-    return true;
+    return !error;
+
   }
 
   public async unfollow(followedUserId: string): Promise<boolean> {
@@ -137,8 +132,8 @@ export class UserProfileService {
       .eq("user_id", this.user.id)
       .eq("followed_user_id", followedUserId);
 
-    if (error) return false;
-    return true;
+    return !error;
+
   }
 
   public async getMyFriendIDs(): Promise<string[]> {
@@ -167,4 +162,36 @@ export class UserProfileService {
     if (error) return error.message;
     return "OK";
   }
+
+  async getUserAvatarUrl() {
+    if (!this.user) {
+      throw new Error('User is not logged in');
+    }
+
+    const files = [`${this.user.id}.jpg`, `${this.user.id}.jpeg`, `${this.user.id}.png`];
+    let filePath: string | null = null;
+
+    const { data: fileList, error } = await this.supabase
+      .storage
+      .from('avatars')
+      .list('', { limit: 1 });
+
+    if (error || fileList === null) { console.error('Error querying avatar:', error); return null}
+
+    fileList.forEach((file) => {
+      if(file.name === files[0] || file.name === files[1] || file.name === files[2]) {
+        filePath = file.name;
+      }
+    })
+
+    if (filePath !== null) {
+      return this.supabase
+        .storage
+        .from('avatars')
+        .getPublicUrl(filePath)
+        .data.publicUrl;
+    }
+    return null;
+  }
+
 }

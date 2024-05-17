@@ -1,10 +1,7 @@
-import {effect, Injectable, signal, WritableSignal} from '@angular/core';
+import {effect, Injectable } from '@angular/core';
 import {User} from "@supabase/supabase-js";
-import {Post} from "../../types/Post.type";
 import {AuthService} from "../../../auth/services/auth.service";
 import {SupabaseService} from "../supabase/supabase.service";
-import {UserProfileService} from "../user-profile/user-profile.service";
-import {assert} from "@angular/compiler-cli/linker";
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +67,47 @@ export class PostPublishingService {
     if (uploadError) throw uploadError;
 
     return fileName;
+  }
+
+  async uploadAvatar(file: File) {
+    if (!this.user) {
+      throw new Error('User is not logged in');
+    }
+
+    const fileNameParts = file.name.split('.');
+    const extension = fileNameParts.splice(fileNameParts.length - 1, 1)[0].toLowerCase();
+
+    if (extension !== 'jpg' && extension !== 'jpeg' && extension !== 'png') {
+      throw new Error('Invalid file type. Only jpg, jpeg, and png images are allowed.');
+    }
+
+    await this.removeExistingAvatar(this.user);
+
+    const fileName = `${this.user.id}.${extension}`;
+    const { error: uploadError } = await this.supabase
+      .storage
+      .from('avatars')
+      .upload(fileName, file, { upsert: true });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    return true;
+  }
+
+  async removeExistingAvatar(user: User) {
+    const existingFileExtensions = ['jpg', 'jpeg', 'png'];
+    for (const extension of existingFileExtensions) {
+      const existingFilePath = `${user.id}.${extension}`;
+      const { error: deleteError } = await this.supabase
+        .storage
+        .from('bucket')
+        .remove([existingFilePath]);
+      if (deleteError) {
+        console.error('Error deleting existing file:', deleteError);
+      }
+    }
   }
 
 }
