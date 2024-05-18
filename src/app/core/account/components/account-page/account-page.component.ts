@@ -1,4 +1,4 @@
-import { Component, effect } from "@angular/core";
+import {Component, effect, OnInit} from "@angular/core";
 import { LogoutFormComponent } from "../../../../auth/components/logout-form/logout-form.component";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { UserProfile } from "../../../../shared/types/Profile.type";
@@ -20,16 +20,19 @@ export class AccountPageComponent {
   interests: Map<number, Interest> = new Map();
   updateStatus: string = "OK";
   selectedFile: File | null = null;
+  showMyPostsInFeed : boolean = true;
 
   constructor(private userService: UserProfileService, private router: Router, private postService: PostPublishingService) {
-    effect(() => {
+    effect(async () => {
       const user = this.userService.userProfile();
       if (user !== null) this.user = user;
+      this.showMyPostsInFeed = await this.userService.doIFollowUser(this.user.id);
     });
 
-    effect(() => {
+    effect( () => {
       this.interests = this.userService.interests();
     });
+
   }
 
   public async saveUserProfile() {
@@ -60,16 +63,32 @@ export class AccountPageComponent {
     if(this.selectedFile !== null){
       console.log("file selected : " + this.selectedFile.name)
       if (await this.postService.uploadAvatar(this.selectedFile)){
-        const url = await this.userService.getUserAvatarUrl();
-        if(url !== null){
-          console.log("URL found : " + url);
-          this.user.avatar_url = url;
-        } else {
-          console.log("No avatar_url retrieved");
-        }
+        await this.setAvatarToLatestUploadedImage();
       }
     }
   }
 
+  async setAvatarToLatestUploadedImage(){
+    const url = await this.userService.getUserAvatarUrl();
+    if(url !== null){
+      console.log("URL found : " + url);
+      this.user.avatar_url = url;
+    } else {
+      console.log("No avatar_url retrieved");
+      this.user.avatar_url = "Please check URL or re-upload picture.";
+    }
+  }
 
+  navigateToMyPostsPage() {
+    this.router.navigate(["/myposts"]).then(r => "")
+  }
+
+  async toggleSeePosts() {
+    this.showMyPostsInFeed = !this.showMyPostsInFeed;
+    if (this.showMyPostsInFeed) {
+      await this.userService.follow(this.user.id);
+    } else {
+      await this.userService.unfollow(this.user.id);
+    }
+  }
 }

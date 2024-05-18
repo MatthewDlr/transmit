@@ -117,9 +117,12 @@
           class="w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
           placeholder="https://storage.iseplife.fr/img/usr/..."
         />
-        <div class="w-[14%] text-center">
+        <div class="w-[15%] text-center">
           <label for="upload-photo" class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300">Upload picture</label>
           <input type="file" name="photo" id="upload-photo" class="opacity-0 z-[-1] absolute" (change)="selectFile($event)"/>
+        </div>
+        <div class="w-[14%] text-center">
+          <label (click)="setAvatarToLatestUploadedImage()" class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300">Check URL</label>
         </div>
       </div>
       </div>
@@ -142,6 +145,57 @@
       </div>
     </div>
     }
+  </div>
+
+  <div class="flex w-full min-w-1 items-center gap-5 border-secondary-200 border bg-secondary-100 bg-opacity-50 rounded-md p-4 place-content-between">
+
+    <div class="flex flex-row w-fit whitespace-nowrap items-center gap-10">
+    <div class="flex flex-col w-full items-start text-secondary-900">
+      <h3 class="font-medium text-base w-fit">Your posts</h3>
+      <p class="text-sm font-light w-fit text-pretty">Manage your posts</p>
+    </div>
+    <div class="w-full flex items-center gap-2 text-secondary-900">
+      <button
+        (click)="toggleSeePosts()"
+        class="px-2 py-0.5 rounded-full border-secondary-900 border text-sm whitespace-nowrap transition-all"
+        [ngClass]="
+            showMyPostsInFeed ? 'bg-secondary-900 text-white hover:bg-opacity-80' : 'text-secondary-900 hover:bg-secondary-200'
+          ">
+        <ng-container *ngIf="showMyPostsInFeed">
+          <span class="text-white">✓</span>
+        </ng-container>
+        <ng-container *ngIf="!showMyPostsInFeed">
+          <span class="text-secondary-900">X</span>
+        </ng-container>
+      </button>
+      Show my posts in feed
+    </div>
+      </div>
+
+
+    <div class="flex w-fit items-center">
+      <button
+        type="button"
+        (click)="navigateToMyPostsPage()"
+        class="inline-flex items-center gap-x-1.5 rounded-md bg-red-900 px-3 py-2.5 font-semibold text-white shadow-sm hover:bg-secondary-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-900 whitespace-nowrap transition-all active:scale-95"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="white"
+          viewBox="0 0 24 24"
+          stroke-width="0"
+          stroke="currentColor"
+          class="w-6 h-6 mr-1"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.025 1l-2.847 2.828 6.176 6.176h-16.354v3.992h16.354l-6.176 6.176 2.847 2.828 10.975-11z"/>
+        </svg>
+
+        View
+      </button>
+    </div>
   </div>
 
   <!-- Logout -->
