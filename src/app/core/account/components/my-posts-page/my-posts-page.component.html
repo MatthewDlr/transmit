@@ -1,0 +1,44 @@
+<div class="flex flex-col gap-5 w-full h-full items-center pt-28 px-52 max-md:px-8 max-lg:px-20">
+
+  <h2 class="text-xl font-semibold">Your posts</h2>
+  <div class="flex flex-row w-full gap-5">
+    <div class="flex flex-col gap-5 w-5/6">
+      <div *ngFor="let post of myPostsWithImages" class="w-full">
+        <div class="w-full p-4 rounded-xl bg-gray-80">
+          <img *ngIf="post.image" [src]="post.image" alt="Post image" class="rounded-md max-h-[500px] object-fill"/>
+          <h2 class="mt-1">{{ post.content }}</h2>
+          <hr class="my-2" />
+          <div class="flex flex-row place-content-between">
+            <p class="timestamp" style="margin-right: 10px">
+              {{ post.timestamp | date : "dd/MM/yyyy, H:mm" }}
+            </p>
+            <p class="text-secondary-600 hover:cursor-pointer" (click)="deletePost(post.id)">
+              Delete post
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-5 w-5/6">
+      <div *ngFor="let post of myPostsWithoutImages" class="w-full">
+        <div class="w-full p-4 rounded-xl bg-gray-80">
+          <h2 class="mt-1">{{ post.content }}</h2>
+          <hr class="my-2" />
+          <div class="flex flex-row place-content-between">
+            <p
+              class="timestamp"
+              style="margin-right: 10px"
+            >
+              {{ post.timestamp | date : "dd/MM/yyyy, H:mm" }}
+            </p>
+            <p class="text-secondary-600 hover:cursor-pointer" (click)="deletePost(post.id)">
+              Delete post
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
