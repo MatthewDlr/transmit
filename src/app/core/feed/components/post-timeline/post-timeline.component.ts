@@ -1,38 +1,45 @@
-import {Component, effect, OnInit, TemplateRef} from '@angular/core';
+import { Component, effect, OnInit, TemplateRef } from "@angular/core";
 import { PostComponent } from "../post/post.component";
 import { PostListService } from "../../../../shared/services/post-extraction/post-extraction.service";
 import { Post } from "../../../../shared/types/Post.type";
-import {NgClass, NgForOf, NgIf, NgIfContext} from "@angular/common";
-import {SupabaseService} from "../../../../shared/services/supabase/supabase.service";
-import {UserProfileService} from "../../../../shared/services/user-profile/user-profile.service";
-import {UserProfile} from "../../../../shared/types/Profile.type";
-import {AuthService} from "../../../../auth/services/auth.service";
-import {User} from "@supabase/supabase-js";
-import {ChristmaspostComponent} from "../../../../eastereggs/christmas-post/christmaspost.component";
-
+import { NgClass, NgForOf, NgIf, NgIfContext } from "@angular/common";
+import { PostSuggestionService } from "../../services/post-suggestion/post-suggestion.service";
+import { SupabaseService } from "../../../../shared/services/supabase/supabase.service";
+import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
+import { UserProfile } from "../../../../shared/types/Profile.type";
+import { AuthService } from "../../../../auth/services/auth.service";
+import { User } from "@supabase/supabase-js";
+import { ChristmaspostComponent } from "../../../../eastereggs/christmas-post/christmaspost.component";
 
 @Component({
-  selector: 'app-post-timeline',
+  selector: "app-post-timeline",
   standalone: true,
-    imports: [PostComponent, NgForOf, NgIf, NgClass, ChristmaspostComponent],
-  templateUrl: './post-timeline.component.html',
-  styleUrls: ['./post-timeline.component.css']
+  imports: [PostComponent, NgForOf, NgIf, NgClass, ChristmaspostComponent],
+  templateUrl: "./post-timeline.component.html",
+  styleUrls: ["./post-timeline.component.css"],
 })
-
 export class PostTimelineComponent implements OnInit {
-
   private supabase = this.supabaseService.client;
-  followedIDs: string[] = []
+  followedIDs: string[] = [];
   posts: Post[] = [];
   incomingPosts: Post[] = [];
   user!: User | undefined;
   loadPostsVisible: boolean = false;
   showChristmasPosts: boolean = false;
 
-  constructor(private postService: PostListService, private supabaseService: SupabaseService,
-              private userService: UserProfileService, private auth: AuthService) {
-    this.supabase.channel('posts')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, this.handleInserts)
+  suggestionPosts: Post[] = [];
+  emptyPostList: TemplateRef<NgIfContext<boolean>> | undefined;
+
+  constructor(
+    private postService: PostListService,
+    private supabaseService: SupabaseService,
+    private userService: UserProfileService,
+    private auth: AuthService,
+    private postSuggestionService: PostSuggestionService,
+  ) {
+    this.supabase
+      .channel("posts")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "posts" }, this.handleInserts)
       .subscribe();
 
     effect(async () => {
@@ -44,7 +51,7 @@ export class PostTimelineComponent implements OnInit {
   }
 
   handleInserts = async (payload: any) => {
-    console.log('New post !');
+    console.log("New post !");
     //console.log(payload);
     const formattedName = await this.formatName(payload.new.created_by);
     const newPost: Post = {
@@ -54,24 +61,24 @@ export class PostTimelineComponent implements OnInit {
       author: formattedName,
       authorNumber: payload.new.created_by,
     };
-    if(this.followedIDs.includes(payload.new.created_by))  {
+    if (this.followedIDs.includes(payload.new.created_by)) {
       this.incomingPosts.unshift(newPost);
       setTimeout(() => {
         this.loadPostsVisible = true;
       }, 1);
     }
-  }
+  };
 
   ngOnInit(): void {
     this.fetchPosts().then(async () => {
-      if(!(await this.postService.isChristmasPostLiked())){
+      if (!(await this.postService.isChristmasPostLiked())) {
         if (this.posts.length > 10 && this.isTimeBetweenNoonAndNoon25()) {
           setTimeout(() => {
             let audio = new Audio();
             audio.src = "assets/sounds/vivelevent_trimmed.mp3";
             audio.load();
             audio.volume = 0.2;
-            audio.play().then(r => this.showChristmasPosts = true);
+            audio.play().then((r) => (this.showChristmasPosts = true));
           }, 10000);
         }
       }
@@ -90,16 +97,12 @@ export class PostTimelineComponent implements OnInit {
       this.posts = await this.postService.getPostList();
       this.posts.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
     }
   }
 
   private async formatName(user_id: string): Promise<string> {
-    const { data, error } = await this.supabase
-      .from("profiles")
-      .select("name, last_name")
-      .eq("id", user_id)
-      .limit(1);
+    const { data, error } = await this.supabase.from("profiles").select("name, last_name").eq("id", user_id).limit(1);
 
     if (error) throw error;
 
