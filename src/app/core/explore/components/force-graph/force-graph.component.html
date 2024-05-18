@@ -1,5 +1,18 @@
 <app-depth-control class="absolute top-5 left-5 z-20 !transition-all"></app-depth-control>
+
+@if (foafService.isLoading()) {
+<div class="spinner">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+}
+
 <div
   id="chart"
+  [ngClass]="foafService.isLoading() ? 'hidden' : 'block'"
   class="z-10"
 ></div>
