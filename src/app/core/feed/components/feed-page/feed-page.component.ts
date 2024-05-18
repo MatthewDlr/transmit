@@ -16,7 +16,8 @@ export class FeedPageComponent {
   // Listen for the cmd+k/ctrl+k to toggle the command palette
   @HostListener("document:keydown.meta.k", ["$event"])
   @HostListener("document:keydown.control.k", ["$event"])
-  onKeydownHandler() {
+  onKeydownHandler(event: KeyboardEvent) {
+    event.preventDefault();
     this.openUsersPalette();
   }
 
