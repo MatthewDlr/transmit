@@ -12,7 +12,6 @@ import { SuggestionTileComponent } from "../suggestion-tile/suggestion-tile.comp
 })
 export class SuggestionsViewComponent {
   users: Set<UserProfile> = new Set();
-
   constructor(private suggestionsService: SuggestionsService) {
     effect(() => {
       this.users = this.suggestionsService.users();

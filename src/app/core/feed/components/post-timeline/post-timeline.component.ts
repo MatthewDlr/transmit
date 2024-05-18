@@ -3,6 +3,8 @@ import { PostComponent } from "../post/post.component";
 import { PostListService } from "../../../../shared/services/post-extraction/post-extraction.service";
 import { Post } from "../../../../shared/types/Post.type";
 import {NgForOf, NgIf, NgIfContext} from "@angular/common";
+import {User} from "@supabase/supabase-js";
+import {PostSuggestionService} from "../../services/post-suggestion/post-suggestion.service";
 
 
 @Component({
@@ -15,9 +17,10 @@ import {NgForOf, NgIf, NgIfContext} from "@angular/common";
 
 export class PostTimelineComponent implements OnInit {
   posts: Post[] = [];
+  suggestionPosts: Post[] = [];
   emptyPostList: TemplateRef<NgIfContext<boolean>> | undefined;
 
-  constructor(private postService: PostListService) { }
+  constructor(private postService: PostListService, private postSuggestionService: PostSuggestionService) { }
 
   ngOnInit(): void {
     this.fetchPosts().then(r => console.log("OK"));
@@ -30,5 +33,9 @@ export class PostTimelineComponent implements OnInit {
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
+  }
+
+  async fetchRecommendedPosts(): Promise<void> {
+    // this.suggestionPosts = await this.postSuggestionService.
   }
 }
