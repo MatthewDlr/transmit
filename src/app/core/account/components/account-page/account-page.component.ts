@@ -60,14 +60,19 @@ export class AccountPageComponent {
     if(this.selectedFile !== null){
       console.log("file selected : " + this.selectedFile.name)
       if (await this.postService.uploadAvatar(this.selectedFile)){
-        const url = await this.userService.getUserAvatarUrl();
-        if(url !== null){
-          console.log("URL found : " + url);
-          this.user.avatar_url = url;
-        } else {
-          console.log("No avatar_url retrieved");
-        }
+        await this.setAvatarToLatestUploadedImage();
       }
+    }
+  }
+
+  async setAvatarToLatestUploadedImage(){
+    const url = await this.userService.getUserAvatarUrl();
+    if(url !== null){
+      console.log("URL found : " + url);
+      this.user.avatar_url = url;
+    } else {
+      console.log("No avatar_url retrieved");
+      this.user.avatar_url = "Please check URL or re-upload picture.";
     }
   }
 
