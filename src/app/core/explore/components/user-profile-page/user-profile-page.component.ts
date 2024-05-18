@@ -28,7 +28,7 @@ export class UserProfilePageComponent  implements OnInit{
   myInterests: Map<number, Interest> = new Map();
   userInterests: Map<number, Interest> = new Map();
   defaultImageUrl = './assets/images/defpfp.png';
-  isConnectedToUser: boolean = false;
+  isFollowingUser: boolean = false;
 
   constructor(private userService: UserProfileService, private route: ActivatedRoute, private router: Router) {
 
@@ -62,14 +62,14 @@ export class UserProfilePageComponent  implements OnInit{
           }
         })
 
-        this.isConnectedToUser = await this.doesLinkExistWith(this.userID);
-        if(this.isConnectedToUser){
+        this.isFollowingUser = await this.doIFollowUser(this.userID);
+        if(this.isFollowingUser){
           console.log("Is connected to user");
         } else {
           console.log("Not connected to user");
         }
 
-        if (this.isConnectedToUser) {
+        if (this.isFollowingUser) {
           const removeFriendButton = document.getElementById('unfollowbtn');
           removeFriendButton?.classList.remove('hidden');
         } else {
@@ -106,7 +106,7 @@ export class UserProfilePageComponent  implements OnInit{
     addFriendButton?.classList.remove('hidden');
   }
 
-  async doesLinkExistWith(externUserId: string) {
-    return this.userService.doesLinkExistWith((externUserId));
+  async doIFollowUser(externUserId: string) {
+    return this.userService.doIFollowUser((externUserId));
   }
 }
