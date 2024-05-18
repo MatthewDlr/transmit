@@ -100,30 +100,23 @@ export class UserProfileService {
     return "OK";
   }
 
-  public async doesLinkExistWith(followedUserId: string): Promise<boolean> {
+  public async doIFollowUser(followedUserId: string): Promise<boolean> {
     if (!this.user) throw new Error("User is not logged in");
 
-    const { data: data1, error: error1 } = await this.supabase
+    const { data, error } = await this.supabase
       .from("following")
       .select("*")
       .eq("user_id", this.user.id)
       .eq("followed_user_id", followedUserId);
 
-    const { data: data2, error: error2 } = await this.supabase
-      .from("following")
-      .select("*")
-      .eq("user_id", followedUserId)
-      .eq("followed_user_id", this.user.id);
-
-    if (error1 || error2) throw error1 || error2;
-    return !(data1?.length === 0 && data2.length === 0);
+    if (error) throw error;
+    return !(data?.length === 0);
   }
 
   public async follow(userID: string): Promise<boolean> {
     if (!this.user) throw new Error("User is not logged in");
 
     const { error } = await this.supabase.from("following").insert([{ user_id: this.user.id, followed_user_id: userID }]);
-
     return !error;
 
   }
