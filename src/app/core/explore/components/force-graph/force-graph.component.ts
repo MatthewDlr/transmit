@@ -6,11 +6,12 @@ import { Subject } from "rxjs";
 import { SimulationLinkDatum } from "d3";
 import { SidePeekService } from "../../services/side-peek/side-peek.service";
 import { DepthControlComponent } from "../depth-control/depth-control.component";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "app-force-graph",
   standalone: true,
-  imports: [DepthControlComponent],
+  imports: [DepthControlComponent, CommonModule],
   templateUrl: "./force-graph.component.html",
   styleUrl: "./force-graph.component.css",
 })
@@ -19,7 +20,7 @@ export class ForceGraphComponent implements OnDestroy {
   nodes: GraphNode[] = [];
   private destroy$ = new Subject<void>();
 
-  constructor(private foafService: FoafService, private sidePeekService: SidePeekService) {
+  constructor(public foafService: FoafService, private sidePeekService: SidePeekService) {
     effect(() => {
       const isLoading = this.foafService.isLoading();
       if (isLoading) return;
