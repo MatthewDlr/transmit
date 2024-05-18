@@ -91,4 +91,15 @@ export class FoafService {
   public getNodes(): GraphNode[] {
     return this.userGraph.getUsers();
   }
+
+  public getUserFromID(userID: string): GraphNode {
+    const user = this.userGraph.getUserFromID(userID);
+    if (!user) throw Error("User does not exist in the keys of the list");
+
+    return user;
+  }
+
+  public getFriendsIDsOf(userID: string): string[] {
+    return this.userGraph.getFriendsIDsOf(userID);
+  }
 }

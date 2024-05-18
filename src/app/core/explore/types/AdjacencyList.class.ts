@@ -49,6 +49,14 @@ export class AdjacencyNodeList {
     return links;
   }
 
+  public getFriendsIDsOf(userID: string): string[] {
+    const user: GraphNode | undefined = this.getUserFromID(userID);
+    if (!user) return [];
+
+    const friends = this.nodes.get(user);
+    return friends ? Array.from(friends) : [];
+  }
+
   public print() {
     console.log(this.nodes);
   }

@@ -8,9 +8,10 @@ import { UserProfileService } from "../../../../shared/services/user-profile/use
 })
 export class SuggestionsService {
   users: WritableSignal<Set<UserProfile>> = signal(new Set());
+  private currentUser!: UserProfile;
 
   constructor(private foafService: FoafService, private userService: UserProfileService) {
-    const currentUser = this.userService.userProfile();
+    this.currentUser = this.userService.userProfile()!;
 
     // This function is run whenever the isLoading signal change value
     effect(() => {
@@ -20,15 +21,13 @@ export class SuggestionsService {
         return;
       } else {
         // All users will be fully fetched now
-        this.addSuggestion(currentUser!);
+        this.addSuggestion(this.currentUser);
       }
     });
   }
 
   public async addSuggestion(user: UserProfile) {
     try {
-      // Fetch friends of the given user
-      await this.foafService.fetch(this.foafService.DEFAULT_MAX_DEPTH);
       const userNode = this.foafService.getNodes().find((node) => node.id === user.id);
 
       if (userNode) {
@@ -50,7 +49,7 @@ export class SuggestionsService {
         });
       }
 
-      console.log(this.users);
+      console.log(this.users());
     } catch (error) {
       console.error(`Error fetching friends for user ${user.id}:`, error);
     }
