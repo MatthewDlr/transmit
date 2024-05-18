@@ -31,7 +31,6 @@ export class AccountPageComponent {
 
     effect( () => {
       this.interests = this.userService.interests();
-
     });
 
   }
@@ -81,7 +80,7 @@ export class AccountPageComponent {
   }
 
   navigateToMyPostsPage() {
-    this.router.navigate(["/myPosts"]).then(r => "")
+    this.router.navigate(["/myposts"]).then(r => "")
   }
 
   async toggleSeePosts() {

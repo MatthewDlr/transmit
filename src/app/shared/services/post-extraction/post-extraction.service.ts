@@ -28,7 +28,8 @@ export class PostListService {
   public async getPostList(): Promise<Post[]> {
     const { data, error } = await this.supabase
       .from("posts")
-      .select("id, created_at, created_by, content, profiles(name, last_name), picture_url");
+      .select("id, created_at, created_by, content, profiles(name, last_name), picture_url")
+      .eq("deleted", false);
 
     if (error) throw error;
     if (!data) throw new Error("No post in database");
@@ -41,12 +42,6 @@ export class PostListService {
       authorNumber: `${item.created_by}`,
       image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
     }));
-
-    /*
-    posts.forEach((item: any) => {
-      console.log(item.content + ' ' + item.image);
-    });
-    */
 
     const friendIDs = await this.userService.getMyFriendIDs();
 
@@ -86,4 +81,12 @@ export class PostListService {
     if (error) throw Error(error.message);
   }
 
+  async deletePost(id: number) {
+    const {error} = await this.supabase
+      .from('posts')
+      .update({deleted: true})
+      .eq('id', id)
+
+    if (error) throw Error(error.message);
+  }
 }
