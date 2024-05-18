@@ -5,6 +5,7 @@ import { UserProfileService } from "../../../../shared/services/user-profile/use
 import { AdjacencyNodeList } from "../../types/AdjacencyList.class";
 import { GraphNode } from "../../types/GraphNode.interface";
 import { SimulationLinkDatum } from "d3";
+import {UserProfile} from "../../../../shared/types/Profile.type";
 
 @Injectable({
   providedIn: "root",
@@ -101,5 +102,17 @@ export class FoafService {
 
   public getFriendsIDsOf(userID: string): string[] {
     return this.userGraph.getFriendsIDsOf(userID);
+  }
+
+  public async getProfileOf(userID: string): Promise<UserProfile> {
+    const { data, error } = await this.supabase
+      .from("profiles")
+      .select("id, updated_at, name, last_name, avatar_url")
+      .eq("id", userID)
+      .single();
+    if (error) throw error;
+    if (!data) throw new Error("Seems that user does not exist in database");
+
+    return data as UserProfile;
   }
 }

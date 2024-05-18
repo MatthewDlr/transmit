@@ -34,7 +34,7 @@ export class AdjacencyNodeList {
     return Array.from(this.nodes.keys());
   }
 
-  // Get of friends of all user in the form of source -> tagret
+  // Get of friends of all user in the form of source -> target
   public getLinks(): SimulationLinkDatum<GraphNode>[] {
     const links: SimulationLinkDatum<GraphNode>[] = [];
     this.nodes.forEach((friendsID, user) => {

@@ -8,7 +8,7 @@ import { UserProfileService } from "../../../../shared/services/user-profile/use
 })
 export class SuggestionsService {
   users: WritableSignal<Set<UserProfile>> = signal(new Set());
-  private currentUser!: UserProfile;
+  private readonly currentUser!: UserProfile;
 
   constructor(private foafService: FoafService, private userService: UserProfileService) {
     this.currentUser = this.userService.userProfile()!;
@@ -26,32 +26,43 @@ export class SuggestionsService {
     });
   }
 
-  public async addSuggestion(user: UserProfile) {
+  public async addSuggestion(user: UserProfile, depth: number = 3) {
     try {
-      const userNode = this.foafService.getNodes().find((node) => node.id === user.id);
+      const directFriends: Set<string> = new Set(this.foafService.getFriendsIDsOf(user.id));
 
-      if (userNode) {
-        const friends = this.foafService
-          .getLinks()
-          .filter((link) => link.source === userNode.id)
-          .map((link) => this.foafService.getNodes().find((node) => node.id === link.target));
+      const exploreFriends = async (currentUser: UserProfile, currentDepth: number) => {
+        if (currentDepth > depth) {
+          return;
+        }
 
-        friends.forEach((friend) => {
-          if (friend) {
-            const friendProfile: UserProfile = {
-              last_name: "",
-              updated_at: "",
-              id: friend.id,
-              name: "",
-            };
-            this.users().add(friendProfile);
+        const userNode = this.foafService.getNodes().find((node) => node.id === currentUser.id);
+        if (userNode) {
+          const friends = this.foafService
+            .getLinks()
+            .filter((link) => link.source === userNode.id)
+            .map((link) => this.foafService.getNodes().find((node) => node.id === link.target));
+
+          for (const friend of friends) {
+            if (friend) {
+              const targetUserGraphNodeId = this.foafService.getUserFromID(friend.id).id;
+              const userProfile = await this.foafService.getProfileOf(targetUserGraphNodeId);
+              if (!directFriends.has(targetUserGraphNodeId)) {
+                this.users().add(userProfile);
+              }
+              await exploreFriends(userProfile, currentDepth + 1);
+            }
           }
-        });
-      }
+        }
+      };
+
+      await exploreFriends(user, 1);
 
       console.log(this.users());
     } catch (error) {
       console.error(`Error fetching friends for user ${user.id}:`, error);
     }
   }
+
+
+
 }
