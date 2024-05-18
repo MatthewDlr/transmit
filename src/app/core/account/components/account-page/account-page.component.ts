@@ -1,4 +1,4 @@
-import { Component, effect } from "@angular/core";
+import {Component, effect, OnInit} from "@angular/core";
 import { LogoutFormComponent } from "../../../../auth/components/logout-form/logout-form.component";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { UserProfile } from "../../../../shared/types/Profile.type";
@@ -20,16 +20,20 @@ export class AccountPageComponent {
   interests: Map<number, Interest> = new Map();
   updateStatus: string = "OK";
   selectedFile: File | null = null;
+  showMyPostsInFeed : boolean = true;
 
   constructor(private userService: UserProfileService, private router: Router, private postService: PostPublishingService) {
-    effect(() => {
+    effect(async () => {
       const user = this.userService.userProfile();
       if (user !== null) this.user = user;
+      this.showMyPostsInFeed = await this.userService.doIFollowUser(this.user.id);
     });
 
-    effect(() => {
+    effect( () => {
       this.interests = this.userService.interests();
+
     });
+
   }
 
   public async saveUserProfile() {
@@ -76,5 +80,16 @@ export class AccountPageComponent {
     }
   }
 
+  navigateToMyPostsPage() {
+    this.router.navigate(["/myPosts"]).then(r => "")
+  }
 
+  async toggleSeePosts() {
+    this.showMyPostsInFeed = !this.showMyPostsInFeed;
+    if (this.showMyPostsInFeed) {
+      await this.userService.follow(this.user.id);
+    } else {
+      await this.userService.unfollow(this.user.id);
+    }
+  }
 }
