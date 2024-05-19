@@ -1,0 +1,53 @@
+<div class="flex flex-col gap-5 w-full h-full items-center pt-28 px-52 max-md:px-8 max-lg:px-20">
+
+  <h2 class="text-xl font-semibold">Your relations</h2>
+  <div class="flex flex-col gap-3 w-5/6">
+    <div *ngFor="let user of myRelations" class="w-full">
+      <div class="w-full p-4 rounded-xl bg-gray-80">
+        <div class="flex flex-row items-center place-content-between">
+          <div class="flex flex-row items-center gap-5">
+            <div class="">
+              @if (user?.avatar_url) {
+                <img
+                  [src]="user?.avatar_url"
+                  class=" aspect-square rounded-lg w-[69px] h-[69px]"
+                />
+              } @else {
+                <div class="w-[69px] h-[69px] aspect-square rounded-lg bg-secondary-900 flex justify-center items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    class=" fill-secondary-800"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+              }
+            </div>
+            <div class="flex flex-col text-2xl items-center font-semibold">
+              <div>
+                {{ user.name }} {{ user.last_name }}
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-row gap-2">
+            <div *ngIf="user.following" (click)="unfollow(user.id)" class="rounded-full px-3 py-1 border-2 border-secondary-600 bg-secondary-100 text-secondary-600 hover:cursor-pointer">
+              Unfollow
+            </div>
+            <div *ngIf="!user.following" (click)="follow(user.id)" class="rounded-full px-3 py-1 border-2 border-green-500 bg-green-100 text-green-500 hover:cursor-pointer">
+              Follow
+            </div>
+            <div *ngIf="user.followsMe" (click)="removeFollower(user.id)" class="rounded-full px-3 py-1 border-2 border-secondary-600 bg-secondary-100 text-secondary-600 hover:cursor-pointer">
+              Remove follower
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
