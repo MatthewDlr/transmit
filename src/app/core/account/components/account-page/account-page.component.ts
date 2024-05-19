@@ -95,4 +95,7 @@ export class AccountPageComponent {
     }
   }
 
+  navigateToRelationsPage() {
+    this.router.navigate(["/relations"]).then(r => "")
+  }
 }

@@ -192,4 +192,26 @@ export class UserProfileService {
     return null;
   }
 
+  public async getMyRelations(): Promise<UserProfile[]> {
+    if (!this.user) { throw new Error('User is not logged in'); }
+
+    const friendIDs = await this.getMyFriendIDs();
+    if (friendIDs.length === 0) {
+      return [];
+    }
+
+    const { data, error } = await this.supabase
+      .from("profiles")
+      .select()
+      .in("id", friendIDs);
+
+    if (error) {
+      console.error("Error fetching profile data:", error);
+      return [];
+    }
+
+    console.log(data);
+
+    return data;
+  }
 }
