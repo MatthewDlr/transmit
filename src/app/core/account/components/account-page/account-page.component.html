@@ -4,163 +4,171 @@
       <h2 class="text-secondary-900 text-xl font-semibold">Your information</h2>
       <div class="flex gap-2 items-center">
         @if (updateStatus === "OK") {
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="size-6 fill-secondary-900"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
-              clip-rule="evenodd"
-            />
-          </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="size-6 fill-secondary-900"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+            clip-rule="evenodd"
+          />
+        </svg>
 
-          <label
-            for="updateError"
-            class="text-sm font-medium text-secondary-900"
-          >
-            Up to date
-          </label>
+        <label
+          for="updateError"
+          class="text-sm font-medium text-secondary-900"
+        >
+          Up to date
+        </label>
         } @else if (updateStatus === "Loading") {
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="size-6 stroke-secondary-900 animate-spin"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z"
-              clip-rule="evenodd"
-            />
-          </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="size-6 stroke-secondary-900 animate-spin"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z"
+            clip-rule="evenodd"
+          />
+        </svg>
         } @else {
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="size-6 fill-red-600"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-              clip-rule="evenodd"
-            />
-          </svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="size-6 fill-red-600"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+            clip-rule="evenodd"
+          />
+        </svg>
 
-          <label
-            for="updateError"
-            class="text-sm text-red-600"
+        <label
+          for="updateError"
+          class="text-sm text-red-600"
           >{{ updateStatus }}</label
-          >
+        >
         }
       </div>
     </div>
 
     @defer (when user) {
-      <div class="grid grid-cols-2 gap-5 max-md:flex max-md:flex-col">
-        <div>
-          <label
-            for="name"
-            class="block font-medium leading-6 text-secondary-900"
+    <div class="grid grid-cols-2 gap-5 max-md:flex max-md:flex-col">
+      <div>
+        <label
+          for="name"
+          class="block font-medium leading-6 text-secondary-900"
           >Name</label
-          >
-          <div class="mt-1">
-            <input
-              type="text"
-              name="name"
-              id="name"
-              (blur)="saveUserProfile()"
-              [(ngModel)]="user.name"
-              class="block w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
-              placeholder="Aline"
-            />
-          </div>
+        >
+        <div class="mt-1">
+          <input
+            type="text"
+            name="name"
+            id="name"
+            (blur)="saveUserProfile()"
+            [(ngModel)]="user.name"
+            class="block w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+            placeholder="Aline"
+          />
         </div>
+      </div>
 
-        <div>
-          <label
-            for="last_name"
-            class="block font-medium leading-6 text-secondary-900"
+      <div>
+        <label
+          for="last_name"
+          class="block font-medium leading-6 text-secondary-900"
           >Family Name</label
-          >
-          <div class="mt-1">
-            <input
-              type="text"
-              name="last_name"
-              id="last_name"
-              (blur)="saveUserProfile()"
-              [(ngModel)]="user.last_name"
-              class="block w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
-              placeholder="AUBERTIN"
-            />
-          </div>
+        >
+        <div class="mt-1">
+          <input
+            type="text"
+            name="last_name"
+            id="last_name"
+            (blur)="saveUserProfile()"
+            [(ngModel)]="user.last_name"
+            class="block w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+            placeholder="AUBERTIN"
+          />
         </div>
       </div>
+    </div>
 
-      <div class="w-full">
-        <div class="">
-          <label
-            for="pp"
-            class="block font-medium leading-6 text-secondary-900"
+    <div class="w-full">
+      <div class="">
+        <label
+          for="pp"
+          class="block font-medium leading-6 text-secondary-900"
           >Profile picture URL</label
-          >
-          <div class="mt-1 flex flex-row gap-2">
+        >
+        <div class="mt-1 flex flex-row gap-2">
+          <input
+            type="text"
+            name="pp"
+            id="pp"
+            (blur)="saveUserProfile()"
+            [(ngModel)]="user.avatar_url"
+            class="w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+            placeholder="https://storage.iseplife.fr/img/usr/..."
+          />
+          <div class="w-[15%] text-center">
+            <label
+              for="upload-photo"
+              class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300"
+              >Upload picture</label
+            >
             <input
-              type="text"
-              name="pp"
-              id="pp"
-              (blur)="saveUserProfile()"
-              [(ngModel)]="user.avatar_url"
-              class="w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
-              placeholder="https://storage.iseplife.fr/img/usr/..."
+              type="file"
+              name="photo"
+              id="upload-photo"
+              class="opacity-0 z-[-1] absolute"
+              (change)="selectFile($event)"
             />
-            <div class="w-[15%] text-center">
-              <label for="upload-photo"
-                     class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300">Upload
-                picture</label>
-              <input type="file" name="photo" id="upload-photo" class="opacity-0 z-[-1] absolute"
-                     (change)="selectFile($event)"/>
-            </div>
-            <div class="w-[14%] text-center">
-              <label (click)="setAvatarToLatestUploadedImage()"
-                     class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300">Check
-                URL</label>
-            </div>
+          </div>
+          <div class="w-[14%] text-center">
+            <label
+              (click)="setAvatarToLatestUploadedImage()"
+              class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300"
+              >Check URL</label
+            >
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="flex flex-col gap-1">
-        <h3 class="text-secondary-900 font-semibold">Interests</h3>
-        <div class="flex gap-2 w-full flex-wrap">
-          @for (interest of interests.values(); track $index) {
-            <button
-              (click)="toggleInterest(interest)"
-              class="px-2 py-1 rounded-full border-secondary-900 border text-sm whitespace-nowrap transition-all"
-              [ngClass]="
+    <div class="flex flex-col gap-1">
+      <h3 class="text-secondary-900 font-semibold">Interests</h3>
+      <div class="flex gap-2 w-full flex-wrap">
+        @for (interest of interests.values(); track $index) {
+        <button
+          (click)="toggleInterest(interest)"
+          class="px-2 py-1 rounded-full border-secondary-900 border text-sm whitespace-nowrap transition-all"
+          [ngClass]="
             interest.followed ? 'bg-secondary-900 text-white hover:bg-opacity-80' : 'text-secondary-900 hover:bg-secondary-200'
           "
-            >
-              {{ interest.name }}
-            </button>
-          }
-        </div>
+        >
+          {{ interest.name }}
+        </button>
+        }
       </div>
+    </div>
     }
   </div>
 
   <div
-    class="flex w-full min-w-1 items-center gap-5 border-secondary-200 border bg-secondary-100 bg-opacity-50 rounded-md p-4 place-content-between">
-
+    class="flex w-full min-w-1 items-center gap-5 border-secondary-200 border bg-secondary-100 bg-opacity-50 rounded-md p-4 place-content-between"
+  >
     <div class="flex flex-row w-fit whitespace-nowrap items-center gap-10">
       <div class="flex flex-col w-full items-start text-secondary-900">
         <h3 class="font-medium text-base w-fit">Your relations</h3>
         <p class="text-sm font-light w-fit text-pretty">Manage your relations</p>
       </div>
-
     </div>
     <div class="flex w-fit items-center">
       <button
@@ -168,16 +176,29 @@
         (click)="navigateToRelationsPage()"
         class="inline-flex items-center gap-x-1.5 rounded-md bg-red-900 px-3 py-2.5 font-semibold text-white shadow-sm hover:bg-secondary-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-900 whitespace-nowrap transition-all active:scale-95"
       >
-        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.8"
+          stroke="currentColor"
+          class="size-6 mr-1"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"
+          />
         </svg>
-        View
+
+        Manage
       </button>
     </div>
   </div>
 
   <div
-    class="flex w-full min-w-1 items-center gap-5 border-secondary-200 border bg-secondary-100 bg-opacity-50 rounded-md p-4 place-content-between">
+    class="flex w-full min-w-1 items-center gap-5 border-secondary-200 border bg-secondary-100 bg-opacity-50 rounded-md p-4 place-content-between"
+  >
     <div class="flex flex-row w-fit whitespace-nowrap items-center gap-10">
       <div class="flex flex-col w-full items-start text-secondary-900">
         <h3 class="font-medium text-base w-fit">Your posts</h3>
@@ -189,7 +210,8 @@
           class="px-2 py-0.5 rounded-full border-secondary-900 border text-sm whitespace-nowrap transition-all"
           [ngClass]="
             showMyPostsInFeed ? 'bg-secondary-900 text-white hover:bg-opacity-80' : 'text-secondary-900 hover:bg-secondary-200'
-          ">
+          "
+        >
           <ng-container *ngIf="showMyPostsInFeed">
             <span class="text-white">✓</span>
           </ng-container>
@@ -201,15 +223,25 @@
       </div>
     </div>
 
-
     <div class="flex w-fit items-center">
       <button
         type="button"
         (click)="navigateToMyPostsPage()"
         class="inline-flex items-center gap-x-1.5 rounded-md bg-red-900 px-3 py-2.5 font-semibold text-white shadow-sm hover:bg-secondary-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-900 whitespace-nowrap transition-all active:scale-95"
       >
-        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 5V4a1 1 0 0 0-1-1H8.914a1 1 0 0 0-.707.293L4.293 7.207A1 1 0 0 0 4 7.914V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5M9 3v4a1 1 0 0 1-1 1H4m11.383.772 2.745 2.746m1.215-3.906a2.089 2.089 0 0 1 0 2.953l-6.65 6.646L9 17.95l.739-3.692 6.646-6.646a2.087 2.087 0 0 1 2.958 0Z"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.8"
+          stroke="currentColor"
+          class="size-6 mr-1"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"
+          />
         </svg>
 
         Manage
