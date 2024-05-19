@@ -4,6 +4,7 @@ import { isLoggedIn } from "./auth/guards/is-logged-in.guard";
 import { UserProfilePageComponent } from "./core/explore/components/user-profile-page/user-profile-page.component";
 import { ExplorePageComponent } from "./core/explore/components/explore-page/explore-page.component";
 import {MyPostsPageComponent} from "./core/account/components/my-posts-page/my-posts-page.component";
+import {RelationsPageComponent} from "./core/account/components/relations-page/relations-page.component";
 
 export const routes: Routes = [
   {
@@ -33,6 +34,10 @@ export const routes: Routes = [
   {
     path: 'myposts',
     component: MyPostsPageComponent
+  },
+  {
+    path: 'relations',
+    component: RelationsPageComponent
   },
   {
     path: "**",
