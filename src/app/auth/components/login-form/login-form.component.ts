@@ -21,7 +21,7 @@ export class LoginFormComponent {
 
   constructor(private readonly auth: AuthService, private readonly formBuilder: FormBuilder, private readonly router: Router) {
     effect(() => {
-      if (this.auth.isLoggedIn()) this.router.navigate(["/feed"]);
+      if (this.auth.isLoggedIn()) this.router.navigate(["/feed"]).then(r => "");
     });
   }
 
