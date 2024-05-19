@@ -4,4 +4,6 @@ export interface UserProfile {
   name: string;
   last_name: string;
   avatar_url?: string;
+  following?: boolean;
+  followsMe?: boolean;
 }

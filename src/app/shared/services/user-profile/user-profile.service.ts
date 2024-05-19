@@ -149,8 +149,8 @@ export class UserProfileService {
 
     let friendIDs: string[];
     friendIDs = [
-      ...(data1 || []).map((item) => item.followed_user_id).filter((id) => true),
-      ...(data2 || []).map((item) => item.user_id).filter((id) => typeof id === "string"),
+      ...(data1 || []).map((item) => item.followed_user_id).filter(() => true),
+      ...(data2 || []).map((item) => item.user_id).filter(() => true),
     ];
     return [...new Set(friendIDs)];
   }
@@ -193,9 +193,30 @@ export class UserProfileService {
   }
 
   public async getMyRelations(): Promise<UserProfile[]> {
-    if (!this.user) { throw new Error('User is not logged in'); }
+    if (!this.user) { throw new Error("User is not logged in"); }
 
-    const friendIDs = await this.getMyFriendIDs();
+    const { data: data1, error: error1 } = await this.supabase
+      .from("following")
+      .select("followed_user_id")
+      .eq("user_id", this.user.id);
+
+    const { data: data2, error: error2 } = await this.supabase
+      .from("following")
+      .select("user_id")
+      .eq("followed_user_id", this.user.id);
+
+    if (error1 || error2) {
+      console.error("Error fetching following data:", error1, error2);
+      return [];
+    }
+
+    let friendIDs: string[] = [
+      ...(data1 || []).map((item) => item.followed_user_id).filter(() => true),
+      ...(data2 || []).map((item) => item.user_id).filter(() => true),
+    ];
+    friendIDs = friendIDs.filter((id: string) => id !== this.user?.id);
+    friendIDs = [...new Set(friendIDs)];
+
     if (friendIDs.length === 0) {
       return [];
     }
@@ -210,8 +231,25 @@ export class UserProfileService {
       return [];
     }
 
-    console.log(data);
+    data.forEach((profile) => {
+      profile.following = data1.some((item) => item.followed_user_id === profile.id);
+      profile.followsMe = data2.some((item) => item.user_id === profile.id);
+    });
 
     return data;
+  }
+
+  async removeFollower(id: string) {
+    if (!this.user) throw new Error("User is not logged in");
+
+    const { data, error} = await this.supabase
+      .from("following")
+      .delete()
+      .eq("user_id", id)
+      .eq("followed_user_id", this.user.id);
+
+    console.log(data);
+
+    return !error;
   }
 }
