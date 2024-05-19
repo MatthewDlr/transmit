@@ -1,0 +1,10 @@
+#newpostspopup {
+  height: 0;
+  overflow: hidden;
+  transition: height 1.7s ease-out;
+}
+
+#newpostspopup.popup-visible {
+  height: 40px;
+  transition: height 0.8s ease-in;
+}
