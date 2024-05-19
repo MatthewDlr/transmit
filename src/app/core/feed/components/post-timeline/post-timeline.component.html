@@ -1,11 +1,18 @@
-<div class="flex flex-col w-full h-full items-center" >
-  <div *ngIf="posts.length > 0; else emptyPostList">
-    <div *ngFor="let post of posts" class="mt-4">
-      <app-post [post]="post"></app-post>
-    </div>
+<div class="w-full flex flex-col items-center">
+  <div id="newpostspopup" class="w-1/2 rounded-full px-4 py-1 border-primary-600 bg-primary-200 mt-4 text-center border-2 text-primary-600 font-bold"
+       *ngIf="incomingPosts.length > 0" (click)="addNewPostsToFeed()" [ngClass]="{'popup-visible': loadPostsVisible}">
+    Load new posts
   </div>
-  <ng-template #emptyPostList class="pt-8">None of your friends have posted yet.</ng-template>
+  <div class="flex flex-col w-full h-full items-center" >
+    <div *ngIf="posts.length > 0; else emptyPostList">
+      <div *ngFor="let post of posts" class="mt-4">
+        <app-post [post]="post"></app-post>
+      </div>
+    </div>
+    <ng-template #emptyPostList class="pt-8">None of your friends have posted yet.</ng-template>
+  </div>
 </div>
+
 
 
 

@@ -1,15 +1,19 @@
-import {Component, OnInit, TemplateRef} from '@angular/core';
+import {Component, effect, OnInit, TemplateRef} from '@angular/core';
 import { PostComponent } from "../post/post.component";
 import { PostListService } from "../../../../shared/services/post-extraction/post-extraction.service";
 import { Post } from "../../../../shared/types/Post.type";
-import {NgForOf, NgIf, NgIfContext} from "@angular/common";
+import {NgClass, NgForOf, NgIf, NgIfContext} from "@angular/common";
 import {SupabaseService} from "../../../../shared/services/supabase/supabase.service";
+import {UserProfileService} from "../../../../shared/services/user-profile/user-profile.service";
+import {UserProfile} from "../../../../shared/types/Profile.type";
+import {AuthService} from "../../../../auth/services/auth.service";
+import {User} from "@supabase/supabase-js";
 
 
 @Component({
   selector: 'app-post-timeline',
   standalone: true,
-  imports: [PostComponent, NgForOf, NgIf],
+  imports: [PostComponent, NgForOf, NgIf, NgClass],
   templateUrl: './post-timeline.component.html',
   styleUrls: ['./post-timeline.component.css']
 })
@@ -17,12 +21,24 @@ import {SupabaseService} from "../../../../shared/services/supabase/supabase.ser
 export class PostTimelineComponent implements OnInit {
 
   private supabase = this.supabaseService.client;
+  followedIDs: string[] = []
   posts: Post[] = [];
+  incomingPosts: Post[] = [];
+  user!: User | undefined;
+  loadPostsVisible: boolean = false;
 
-  constructor(private postService: PostListService, private supabaseService: SupabaseService) {
+  constructor(private postService: PostListService, private supabaseService: SupabaseService,
+              private userService: UserProfileService, private auth: AuthService) {
     this.supabase.channel('posts')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, this.handleInserts)
       .subscribe();
+
+    effect(async () => {
+      this.user = this.auth.userSession()?.user;
+      if (!this.user) return;
+
+      this.followedIDs = await this.userService.getFollowedUsers();
+    });
   }
 
   handleInserts = async (payload: any) => {
@@ -36,7 +52,12 @@ export class PostTimelineComponent implements OnInit {
       author: formattedName,
       authorNumber: payload.new.created_by,
     };
-    this.posts.unshift(newPost);
+    if(this.followedIDs.includes(payload.new.created_by))  {
+      this.incomingPosts.unshift(newPost);
+      setTimeout(() => {
+        this.loadPostsVisible = true;
+      }, 1);
+    }
   }
 
   ngOnInit(): void {
@@ -59,10 +80,7 @@ export class PostTimelineComponent implements OnInit {
       .eq("id", user_id)
       .limit(1);
 
-    if (error) {
-      console.error(error);
-      return "";
-    }
+    if (error) throw error;
 
     if (data.length === 0) {
       return user_id.substring(0, 10);
@@ -71,5 +89,13 @@ export class PostTimelineComponent implements OnInit {
     const lastName = data[0].last_name;
 
     return `${name} ${lastName}`;
+  }
+
+  addNewPostsToFeed() {
+    this.posts = [...this.incomingPosts, ...this.posts];
+    this.loadPostsVisible = false;
+    setTimeout(() => {
+      this.incomingPosts = [];
+    }, 1000);
   }
 }

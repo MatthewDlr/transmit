@@ -134,6 +134,24 @@ export class UserProfileService {
 
   }
 
+  public async getFollowedUsers(): Promise<string[]> {
+    if (!this.user) {
+      throw new Error("User is not logged in");
+    }
+
+    const { data, error } = await this.supabase
+      .from("following")
+      .select("followed_user_id")
+      .eq("user_id", this.user.id);
+
+    if (error) {
+      console.error(error);
+      return [];
+    }
+
+    return Array.from(new Set(data.map((item) => item.followed_user_id)));
+  }
+
   public async getMyFriendIDs(): Promise<string[]> {
     if (!this.user) throw new Error("User is not logged in");
 
