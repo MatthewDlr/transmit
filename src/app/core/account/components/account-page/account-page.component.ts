@@ -1,4 +1,4 @@
-import {Component, effect, OnInit} from "@angular/core";
+import {Component, effect } from "@angular/core";
 import { LogoutFormComponent } from "../../../../auth/components/logout-form/logout-form.component";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { UserProfile } from "../../../../shared/types/Profile.type";
@@ -22,7 +22,9 @@ export class AccountPageComponent {
   selectedFile: File | null = null;
   showMyPostsInFeed : boolean = true;
 
-  constructor(private userService: UserProfileService, private router: Router, private postService: PostPublishingService) {
+
+  constructor(private userService: UserProfileService, private router: Router,
+              private postService: PostPublishingService) {
     effect(async () => {
       const user = this.userService.userProfile();
       if (user !== null) this.user = user;
@@ -73,6 +75,7 @@ export class AccountPageComponent {
     if(url !== null){
       console.log("URL found : " + url);
       this.user.avatar_url = url;
+      await this.saveUserProfile();
     } else {
       console.log("No avatar_url retrieved");
       this.user.avatar_url = "Please check URL or re-upload picture.";
@@ -91,4 +94,5 @@ export class AccountPageComponent {
       await this.userService.unfollow(this.user.id);
     }
   }
+
 }
