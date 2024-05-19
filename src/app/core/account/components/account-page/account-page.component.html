@@ -112,12 +112,13 @@
             type="text"
             name="pp"
             id="pp"
+            title="JPEG, JPG or PNG"
             (blur)="saveUserProfile()"
             [(ngModel)]="user.avatar_url"
             class="w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
             placeholder="https://storage.iseplife.fr/img/usr/..."
           />
-          <div class="w-[15%] text-center">
+          <div class="w-[20%] text-center">
             <label
               for="upload-photo"
               class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300"
@@ -131,11 +132,11 @@
               (change)="selectFile($event)"
             />
           </div>
-          <div class="w-[14%] text-center">
+          <div class="w-[20%] text-center">
             <label
               (click)="setAvatarToLatestUploadedImage()"
               class="cursor-pointer block bg-transparent rounded-md border-0 p-1.5 text-secondary-900 ring-1 ring-inset ring-secondary-300"
-              >Check URL</label
+              >Refresh URL</label
             >
           </div>
         </div>
