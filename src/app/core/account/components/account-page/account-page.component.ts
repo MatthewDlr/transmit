@@ -78,7 +78,6 @@ export class AccountPageComponent {
       await this.saveUserProfile();
     } else {
       console.log("No avatar_url retrieved");
-      this.user.avatar_url = "Please check URL or re-upload picture.";
     }
   }
 

@@ -162,9 +162,7 @@ export class UserProfileService {
   }
 
   async getUserAvatarUrl() {
-    if (!this.user) {
-      throw new Error('User is not logged in');
-    }
+    if (!this.user) { throw new Error('User is not logged in'); }
 
     const files = [`${this.user.id}.jpg`, `${this.user.id}.jpeg`, `${this.user.id}.png`];
     let filePath: string | null = null;
@@ -172,15 +170,17 @@ export class UserProfileService {
     const { data: fileList, error } = await this.supabase
       .storage
       .from('avatars')
-      .list('', { limit: 1 });
+      .list('');
 
     if (error || fileList === null) { console.error('Error querying avatar:', error); return null}
 
-    fileList.forEach((file) => {
-      if(file.name === files[0] || file.name === files[1] || file.name === files[2]) {
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      if (file.name === files[0] || file.name === files[1] || file.name === files[2]) {
         filePath = file.name;
+        break;
       }
-    })
+    }
 
     if (filePath !== null) {
       return this.supabase
