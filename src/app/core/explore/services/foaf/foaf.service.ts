@@ -14,7 +14,7 @@ export class FoafService {
   private supabase: SupabaseClient = this.supabaseService.client;
   private userGraph: AdjacencyNodeList = new AdjacencyNodeList();
   public isLoading: WritableSignal<boolean> = signal(true);
-  public readonly DEFAULT_MAX_DEPTH = 3;
+  public readonly DEFAULT_MAX_DEPTH = 2;
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {
     this.fetch(this.DEFAULT_MAX_DEPTH);
@@ -45,10 +45,8 @@ export class FoafService {
 
     while (idsToFetch.length > 0) {
       const currentUser: GraphNode | undefined = this.userGraph.getUserFromID(idsToFetch.pop()!);
-      if (!currentUser || currentUser.depth >= maxDepth) return;
-      if (fetchedUsers.has(currentUser.id)) continue;
+      if (!currentUser || currentUser.depth >= maxDepth || fetchedUsers.has(currentUser.id)) continue;
 
-      console.log("currentUserID", currentUser.id);
       const friendsID = await this.fetchFriendsIdOf(currentUser.id);
       console.log("friendsID", friendsID);
       friendsID.forEach((friendID) => {
