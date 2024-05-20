@@ -16,7 +16,7 @@ export class AuthService {
   constructor(private supabaseService: SupabaseService) {
     this.supabase.auth.getSession().then((response) => {
       this.userSession.set(response.data.session || null);
-      console.log("userSession:", this.userSession());
+      //console.log("userSession:", this.userSession());
     });
   }
   public signIn(email: string): Promise<AuthOtpResponse> {
