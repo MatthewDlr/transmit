@@ -159,6 +159,14 @@
         }
       </div>
     </div>
+
+      <div class="flex flex-col gap-1">
+        <h3 class="text-secondary-900 font-semibold">Badges</h3>
+        <div class="flex gap-2 w-full flex-wrap">
+          <img *ngIf="showChristmasBadge" src="assets/images/smiley_perenoel.png" [width]="60" [height]="60" alt="HOHOHO"/>
+          <img *ngIf="!showChristmasBadge" src="assets/images/perenoel_gris.png" [width]="60" [height]="60" alt="HOHOHO"/>
+        </div>
+      </div>
     }
   </div>
 
