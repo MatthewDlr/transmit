@@ -89,4 +89,35 @@ export class PostListService {
 
     if (error) throw Error(error.message);
   }
+
+  async isChristmasPostLiked() {
+    if (!this.user) return;
+
+    const { data, error } = await this.supabase
+      .from("eastereggs")
+      .select("christmas_found")
+      .eq("user_id", this.user?.id);
+
+    if (error) throw Error(error.message);
+
+    return data[0].christmas_found;
+  }
+
+  async likeChristmasPost() {
+    if (!this.user) return;
+
+    const { error } = await this.supabase
+      .from("eastereggs")
+      .upsert([
+        {
+          user_id: this.user.id,
+          christmas_found: true,
+          christmas_found_at: new Date(),
+        },
+      ])
+      .eq("user_id", this.user.id);
+
+    if (error) throw Error(error.message);
+  }
+
 }

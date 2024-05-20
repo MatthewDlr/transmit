@@ -8,12 +8,13 @@ import {UserProfileService} from "../../../../shared/services/user-profile/user-
 import {UserProfile} from "../../../../shared/types/Profile.type";
 import {AuthService} from "../../../../auth/services/auth.service";
 import {User} from "@supabase/supabase-js";
+import {ChristmaspostComponent} from "../../../../eastereggs/christmas-post/christmaspost.component";
 
 
 @Component({
   selector: 'app-post-timeline',
   standalone: true,
-  imports: [PostComponent, NgForOf, NgIf, NgClass],
+    imports: [PostComponent, NgForOf, NgIf, NgClass, ChristmaspostComponent],
   templateUrl: './post-timeline.component.html',
   styleUrls: ['./post-timeline.component.css']
 })
@@ -26,6 +27,7 @@ export class PostTimelineComponent implements OnInit {
   incomingPosts: Post[] = [];
   user!: User | undefined;
   loadPostsVisible: boolean = false;
+  showChristmasPosts: boolean = false;
 
   constructor(private postService: PostListService, private supabaseService: SupabaseService,
               private userService: UserProfileService, private auth: AuthService) {
@@ -61,7 +63,26 @@ export class PostTimelineComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.fetchPosts().then(r => console.log("OK"));
+    this.fetchPosts().then(async () => {
+      if(!(await this.postService.isChristmasPostLiked())){
+        if (this.posts.length > 10 && this.isTimeBetweenNoonAndNoon25()) {
+          setTimeout(() => {
+            let audio = new Audio();
+            audio.src = "assets/sounds/vivelevent_trimmed.mp3";
+            audio.load();
+            audio.volume = 0.2;
+            audio.play().then(r => this.showChristmasPosts = true);
+          }, 10000);
+        }
+      }
+    });
+  }
+
+  isTimeBetweenNoonAndNoon25(): boolean {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    return hours === 12 && minutes >= 1 && minutes <= 25;
   }
 
   async fetchPosts(): Promise<void> {
