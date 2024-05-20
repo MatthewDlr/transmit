@@ -1,0 +1,28 @@
+<div class="w-full p-4 rounded-xl bg-red-600">
+  <h2 class="mt-1 text-lg text-white">Tu as raté la magie de Noël ? Ne t'inquiète pas, tout n'est pas perdu ;)
+    Mais il faut avoir été sage et gentil, surtout gentil!</h2>
+  <hr class="my-2" />
+  <div class="flex flex-row place-content-between">
+  <div style="display: flex; align-items: start">
+    <p
+      class="text-white"
+      style="margin-right: 10px"
+    >
+      25/12/2023, 23:59
+    </p>
+    <a
+      class="text-white m-0"
+      >&#64;Le Père Noël</a
+    >
+  </div>
+    <div>
+      <div *ngIf="!isLiked" (click)="likeChristmasPost()">
+        <fa-icon [icon]="faHeart" class="text-gray-400 text-lg"></fa-icon>
+      </div>
+      <div *ngIf="isLiked" (click)="unlikeChristmasPost()">
+        <fa-icon [icon]="faHeart" class="text-secondary-500 text-lg"></fa-icon>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -11,6 +11,9 @@
     </div>
     <ng-template #emptyPostList class="pt-8">None of your friends have posted yet.</ng-template>
   </div>
+  <div *ngIf="showChristmasPosts" class="mt-4 w-full">
+    <app-christmas-post></app-christmas-post>
+  </div>
 </div>
 
 

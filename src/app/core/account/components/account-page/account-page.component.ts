@@ -7,6 +7,7 @@ import { Interest } from "../../../../shared/types/Interest.type";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
 import {PostPublishingService} from "../../../../shared/services/post-publishing/post-publishing.service";
+import {PostListService} from "../../../../shared/services/post-extraction/post-extraction.service";
 
 @Component({
   selector: "app-account-page",
@@ -21,14 +22,15 @@ export class AccountPageComponent {
   updateStatus: string = "OK";
   selectedFile: File | null = null;
   showMyPostsInFeed : boolean = true;
-
+  showChristmasBadge: boolean = false;
 
   constructor(private userService: UserProfileService, private router: Router,
-              private postService: PostPublishingService) {
+              private postService: PostPublishingService, private postListService: PostListService) {
     effect(async () => {
       const user = this.userService.userProfile();
       if (user !== null) this.user = user;
       this.showMyPostsInFeed = await this.userService.doIFollowUser(this.user.id);
+      this.showChristmasBadge = await this.postListService.isChristmasPostLiked();
     });
 
     effect( () => {
