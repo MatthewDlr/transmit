@@ -49,16 +49,16 @@ export class PostTimelineComponent implements OnInit {
   }
 
   handleInserts = async (payload: any) => {
-    console.log('New post !');
+    console.log('New post !')
     const formattedName = await this.formatName(payload.new.created_by);
     const newPost: Post = {
-      comments: payload.new.comments,
+      comments: [],
       image: payload.new.image,
       id: payload.new.id,
       content: payload.new.content,
       timestamp: new Date(payload.new.created_at),
       author: formattedName,
-      authorNumber: payload.new.created_by
+      authorNumber: payload.new.created_by,
     };
     if(this.followedIDs.includes(payload.new.created_by))  {
       this.incomingPosts.unshift(newPost);
