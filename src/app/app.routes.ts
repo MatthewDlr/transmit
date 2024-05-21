@@ -30,14 +30,17 @@ export const routes: Routes = [
   {
     path: "explore/user/:id",
     component: UserProfilePageComponent,
+    canActivate: [isLoggedIn],
   },
   {
     path: "myposts",
     component: MyPostsPageComponent,
+    canActivate: [isLoggedIn],
   },
   {
     path: "relations",
     component: RelationsPageComponent,
+    canActivate: [isLoggedIn],
   },
   {
     path: "about",
@@ -45,6 +48,6 @@ export const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: "feed",
+    redirectTo: "about",
   },
 ];

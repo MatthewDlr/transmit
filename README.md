@@ -1,31 +1,22 @@
 # Transmit
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.7.
+## Introduction
 
-## Installation
+### The Project 
+The project aims to design and develop a TSN (Tailored Social Network) platform that offers advanced functionalities beyond traditional platforms like Facebook. The platform must be based on a graph structure, inspired by the FOAF (Friend of a Friend) Ontology, enabling users to connect, interact, and share content in a more personalized and intuitive manner.
+
+### See it live
+We recently enabled GA (General Availability) of our project, making it accessible, online, by everyone.
+You can see it here : https://transmit-project.vercel.app/about
+
+### Local Installation
 Run `pnpm install` to get started and install all dependencies.
 If you don't have `pnpm` installed, simply run `npm install -g pnpm`.
 
-## Development server
+Run `pnpm dev` for a dev server ; then, navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files. You don't need to run anything else in order to get started ; our project relies on on-device-computing making it  backendless, and the database is hosted online.
 
-Run `pnpm dev` for a dev server. Then, navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Project Features
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
