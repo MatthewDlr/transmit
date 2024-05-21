@@ -26,43 +26,34 @@ export class SuggestionsService {
     });
   }
 
-  public async addSuggestion(user: UserProfile, depth: number = 3) {
+  public async addSuggestion(user: UserProfile) {
     try {
-      const directFriends: Set<string> = new Set(this.foafService.getFriendsIDsOf(user.id));
-
-      const exploreFriends = async (currentUser: UserProfile, currentDepth: number) => {
-        if (currentDepth > depth) {
-          return;
-        }
-
-        const userNode = this.foafService.getNodes().find((node) => node.id === currentUser.id);
-        if (userNode) {
-          const friends = this.foafService
-            .getLinks()
-            .filter((link) => link.source === userNode.id)
-            .map((link) => this.foafService.getNodes().find((node) => node.id === link.target));
-
-          for (const friend of friends) {
-            if (friend) {
-              const targetUserGraphNodeId = this.foafService.getUserFromID(friend.id).id;
-              const userProfile = await this.foafService.getProfileOf(targetUserGraphNodeId);
-              if (!directFriends.has(targetUserGraphNodeId)) {
-                this.users().add(userProfile);
-              }
-              await exploreFriends(userProfile, currentDepth + 1);
-            }
+      // DirectFriendsID
+      const directFriendsId: Set<string> = new Set(this.foafService.getFriendsIDsOf(user.id));
+      // List of ID of Friends of Friends that are not my friend
+      const directFriendsOfFriendsNotFriendId: string[] = [];
+      // For each friendId in the set of my directFriendsId
+      for (const directFriendId of directFriendsId){
+        // Get the friendsId of the given friendId (friend of friend)
+        console.log('---');
+        const directFriendsOfFriendsId: string[] = this.foafService.getFriendsIDsOf(directFriendId);
+        console.log('directFriendsOfFriendsId' + directFriendsOfFriendsId);
+        for (const directFriendOfFriendId of directFriendsOfFriendsId){
+          console.log(directFriendOfFriendId);
+          if (!directFriendsId.has(directFriendOfFriendId)) {
+            directFriendsOfFriendsNotFriendId.push(directFriendOfFriendId);
+            let user :UserProfile = await this.foafService.getProfileOf(directFriendOfFriendId);
+            this.users().add(user);
           }
         }
-      };
+      }
 
-      await exploreFriends(user, 1);
+      console.log("directFriendsOfFriendsNotFriendId", directFriendsOfFriendsNotFriendId);
 
-      console.log(this.users());
     } catch (error) {
       console.error(`Error fetching friends for user ${user.id}:`, error);
     }
   }
-
 
 
 }
