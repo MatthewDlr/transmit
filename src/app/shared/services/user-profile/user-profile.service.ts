@@ -271,11 +271,13 @@ export class UserProfileService {
     return !error;
   }
 
-  public async getAllUsers(): Promise<UserProfile[]> {
-    if (!this.user) throw new Error("User is not logged in");
-    const { data, error } = await this.supabase
-      .from("profiles")
-      .select('*')
-    return data as UserProfile[];
+
+  async deleteAvatars(id: string) {
+    const {data, error} = await this.supabase
+      .storage
+      .from('avatars')
+      .remove([id + ".png", id + ".jpg", id + ".jpeg"]);
+      if(error) throw error;
   }
+
 }

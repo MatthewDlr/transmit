@@ -3,8 +3,8 @@ import { isNotLoggedInGuard } from "./auth/guards/is-not-logged-in.guard";
 import { isLoggedIn } from "./auth/guards/is-logged-in.guard";
 import { UserProfilePageComponent } from "./core/explore/components/user-profile-page/user-profile-page.component";
 import { ExplorePageComponent } from "./core/explore/components/explore-page/explore-page.component";
-import {MyPostsPageComponent} from "./core/account/components/my-posts-page/my-posts-page.component";
-import {RelationsPageComponent} from "./core/account/components/relations-page/relations-page.component";
+import { MyPostsPageComponent } from "./core/account/components/my-posts-page/my-posts-page.component";
+import { RelationsPageComponent } from "./core/account/components/relations-page/relations-page.component";
 
 export const routes: Routes = [
   {
@@ -28,8 +28,23 @@ export const routes: Routes = [
     canActivate: [isLoggedIn],
   },
   {
-    path: 'explore/user/:id',
-    component: UserProfilePageComponent
+    path: "explore/user/:id",
+    component: UserProfilePageComponent,
+    canActivate: [isLoggedIn],
+  },
+  {
+    path: "myposts",
+    component: MyPostsPageComponent,
+    canActivate: [isLoggedIn],
+  },
+  {
+    path: "relations",
+    component: RelationsPageComponent,
+    canActivate: [isLoggedIn],
+  },
+  {
+    path: "about",
+    loadComponent: () => import("./core/about/components/about-page/about-page.component").then((m) => m.AboutPageComponent),
   },
   {
     path: 'myposts',
@@ -41,6 +56,6 @@ export const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: "feed",
+    redirectTo: "about",
   },
 ];

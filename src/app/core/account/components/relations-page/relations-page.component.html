@@ -1,7 +1,7 @@
 <div class="flex flex-col gap-5 w-full h-full items-center pt-28 px-52 max-md:px-8 max-lg:px-20">
 
   <h2 class="text-xl font-semibold">Your relations</h2>
-  <div class="flex flex-col gap-3 w-5/6">
+  <div class="flex flex-col gap-3 w-5/6 max-sm:w-11/12">
     <div *ngFor="let user of myRelations" class="w-full">
       <div class="w-full p-4 rounded-xl bg-gray-80">
         <div class="flex flex-row items-center place-content-between">
@@ -29,13 +29,11 @@
                 </div>
               }
             </div>
-            <div class="flex flex-col text-2xl items-center font-semibold">
-              <div>
-                {{ user.name }} {{ user.last_name }}
-              </div>
+            <div class="text-2xl items-center font-semibold">
+              {{ user.name }} {{ user.last_name }}
             </div>
           </div>
-          <div class="flex flex-row gap-2">
+          <div class="flex flex-row max-sm:flex-col max-sm:text-center gap-2">
             <div *ngIf="user.following" (click)="unfollow(user.id)" class="rounded-full px-3 py-1 border-2 border-secondary-600 bg-secondary-100 text-secondary-600 hover:cursor-pointer">
               Unfollow
             </div>
@@ -43,7 +41,7 @@
               Follow
             </div>
             <div *ngIf="user.followsMe" (click)="removeFollower(user.id)" class="rounded-full px-3 py-1 border-2 border-secondary-600 bg-secondary-100 text-secondary-600 hover:cursor-pointer">
-              Remove follower
+              Remove
             </div>
           </div>
         </div>

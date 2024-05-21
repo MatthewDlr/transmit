@@ -48,7 +48,7 @@ export class FoafService {
       if (!currentUser || currentUser.depth >= maxDepth || fetchedUsers.has(currentUser.id)) continue;
 
       const friendsID = await this.fetchFriendsIdOf(currentUser.id);
-      // console.log("friendsID", friendsID);
+      console.log("friendsID", friendsID);
       friendsID.forEach((friendID) => {
         const friend = this.userGraph.addUser(friendID, currentUser.depth + 1);
         this.userGraph.addFriend(currentUser, friend);

@@ -23,12 +23,17 @@ export class AccountPageComponent {
   selectedFile: File | null = null;
   showMyPostsInFeed : boolean = true;
   showChristmasBadge: boolean = false;
+  imageUrl: string | undefined = undefined;
 
   constructor(private userService: UserProfileService, private router: Router,
               private postService: PostPublishingService, private postListService: PostListService) {
     effect(async () => {
       const user = this.userService.userProfile();
       if (user !== null) this.user = user;
+
+      if(this.user.avatar_url){
+        this.imageUrl = this.user.avatar_url + "?" + Date.now();
+      }
       this.showMyPostsInFeed = await this.userService.doIFollowUser(this.user.id);
       this.showChristmasBadge = await this.postListService.isChristmasPostLiked();
     });
@@ -65,7 +70,6 @@ export class AccountPageComponent {
   async selectFile(event: any) {
     this.selectedFile = event.target.files[0];
     if(this.selectedFile !== null){
-      console.log("file selected : " + this.selectedFile.name)
       if (await this.postService.uploadAvatar(this.selectedFile)){
         await this.setAvatarToLatestUploadedImage();
       }
@@ -75,11 +79,12 @@ export class AccountPageComponent {
   async setAvatarToLatestUploadedImage(){
     const url = await this.userService.getUserAvatarUrl();
     if(url !== null){
-      console.log("URL found : " + url);
       this.user.avatar_url = url;
       await this.saveUserProfile();
+      this.imageUrl = url + "?" + Date.now();
+      console.log("Avatar set to new image");
     } else {
-      console.log("No avatar_url retrieved");
+      console.log("No avatar found in database");
     }
   }
 
@@ -98,5 +103,12 @@ export class AccountPageComponent {
 
   navigateToRelationsPage() {
     this.router.navigate(["/relations"]).then(r => "")
+  }
+
+  async deletePicture() {
+    this.user.avatar_url = undefined;
+    await this.saveUserProfile();
+    await this.userService.deleteAvatars(this.user.id);
+    this.imageUrl = undefined;
   }
 }
