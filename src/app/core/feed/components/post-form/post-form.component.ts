@@ -42,7 +42,7 @@ export class PostFormComponent implements OnInit {
   postPost(value: string) {
     if(value.length <= 5){
       this.isError = true;
-      this.message = "Please add more content.";
+      this.message = "Text is too short.";
       this.isPopupVisible = true;
       setTimeout(() => {
         this.isPopupVisible = false;

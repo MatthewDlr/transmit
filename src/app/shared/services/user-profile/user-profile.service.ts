@@ -270,4 +270,14 @@ export class UserProfileService {
 
     return !error;
   }
+
+
+  async deleteAvatars(id: string) {
+    const {data, error} = await this.supabase
+      .storage
+      .from('avatars')
+      .remove([id + ".png", id + ".jpg", id + ".jpeg"]);
+      if(error) throw error;
+  }
+
 }
