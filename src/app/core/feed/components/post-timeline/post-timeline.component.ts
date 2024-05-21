@@ -9,6 +9,8 @@ import {UserProfile} from "../../../../shared/types/Profile.type";
 import {AuthService} from "../../../../auth/services/auth.service";
 import {User} from "@supabase/supabase-js";
 import {ChristmaspostComponent} from "../../../../eastereggs/christmas-post/christmaspost.component";
+import {CommentService} from "../../../../shared/services/comment/comment.service";
+import { Comment } from "../../../../shared/types/Comment.type";
 
 @Component({
   selector: "app-post-timeline",
@@ -33,10 +35,13 @@ export class PostTimelineComponent implements OnInit {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, this.handleInserts)
       .subscribe();
 
+    this.supabase.channel('comments')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, this.handleComments)
+      .subscribe();
+
     effect(async () => {
       this.user = this.auth.userSession()?.user;
       if (!this.user) return;
-
       this.followedIDs = await this.userService.getFollowedUsers();
     });
   }
@@ -45,11 +50,13 @@ export class PostTimelineComponent implements OnInit {
     console.log('New post !');
     const formattedName = await this.formatName(payload.new.created_by);
     const newPost: Post = {
+      comments: payload.new.comments,
+      image: payload.new.image,
       id: payload.new.id,
       content: payload.new.content,
       timestamp: new Date(payload.new.created_at),
       author: formattedName,
-      authorNumber: payload.new.created_by,
+      authorNumber: payload.new.created_by
     };
 
     if(this.followedIDs.includes(payload.new.created_by))  {
@@ -58,6 +65,24 @@ export class PostTimelineComponent implements OnInit {
       setTimeout(() => {
         this.loadPostsVisible = true;
       }, 1);
+    }
+  }
+
+  handleComments = async (payload: any) => {
+    console.log(payload);
+    const comment: Comment = {
+      id: payload.new.id,
+      post_id: payload.new.post_id,
+      author: payload.new.author,
+      authorNumber: payload.new.author_id,
+      content: payload.new.content,
+      created_at: payload.new.created_at,
+    }
+    for (let i = 0; i < this.posts.length; i++) {
+      if (this.posts[i].id === comment.post_id) {
+        this.posts[i].comments.push(comment);
+        break;
+      }
     }
   }
 
