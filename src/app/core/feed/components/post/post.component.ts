@@ -1,12 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Post } from '../../../../shared/types/Post.type';
-import {DatePipe, NgIf} from "@angular/common";
+import {DatePipe, NgForOf, NgIf} from "@angular/common";
 import {PostListService} from "../../../../shared/services/post-extraction/post-extraction.service";
 import {faTimesCircle} from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {faHeart} from "@fortawesome/free-solid-svg-icons/faHeart";
-import {faHeartBroken} from "@fortawesome/free-solid-svg-icons/faHeartBroken";
+import {CommentFormComponent} from "../comment-form/comment-form.component";
+import { Comment } from "../../../../shared/types/Comment.type";
 
 @Component({
   selector: 'app-post',
@@ -15,7 +16,9 @@ import {faHeartBroken} from "@fortawesome/free-solid-svg-icons/faHeartBroken";
   imports: [
     NgIf,
     DatePipe,
-    FaIconComponent
+    FaIconComponent,
+    CommentFormComponent,
+    NgForOf
   ],
   styleUrls: ['./post.component.css']
 })

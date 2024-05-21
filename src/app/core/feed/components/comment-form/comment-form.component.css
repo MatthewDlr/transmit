@@ -1,0 +1,11 @@
+#commentForm {
+  transition: width 2s ease, opacity 2s ease, height 2s ease;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
