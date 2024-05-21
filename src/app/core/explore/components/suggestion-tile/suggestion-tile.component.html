@@ -1,5 +1,5 @@
 <div
-  class="flex flex-col w-40 h-full bg-secondary-100 bg-opacity-50 rounded-md p-3 items-center justify-center gap-2 border border-secondary-200 hover:bg-opacity-25" 
+  class="flex flex-col w-40 h-full bg-secondary-100 bg-opacity-50 rounded-md p-3 items-center justify-center gap-2 border border-secondary-200 hover:bg-opacity-25"
 >
   <!-- Profile Picture-->
   @if (user.avatar_url) {
@@ -27,6 +27,15 @@
     <div>{{ user.name }}</div>
     <div>{{ user.last_name }}</div>
   </div>
+
+  @if (user.friendsInCommon && user.friendsInCommon > 0) {
+  <div class="flex gap-1 text-secondary-900 text-center text-sm font-normal">
+    <div>{{ user.friendsInCommon }}</div>
+    <div>friends in common</div>
+  </div>
+  }
+
+  <!-- Following Button -->
   <button
     (click)="onFollowClick()"
     [ngClass]="

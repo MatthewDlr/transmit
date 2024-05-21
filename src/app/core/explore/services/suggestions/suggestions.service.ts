@@ -2,12 +2,13 @@ import { Injectable, WritableSignal, effect, signal } from "@angular/core";
 import { UserProfile } from "../../../../shared/types/Profile.type";
 import { FoafService } from "../foaf/foaf.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
+import { UserSuggestion } from "../../types/UserSuggestion.interface";
 
 @Injectable({
   providedIn: "root",
 })
 export class SuggestionsService {
-  users: WritableSignal<Set<UserProfile>> = signal(new Set());
+  users: WritableSignal<Set<UserSuggestion>> = signal(new Set());
   private readonly currentUser!: UserProfile;
 
   constructor(private foafService: FoafService, private userService: UserProfileService) {
