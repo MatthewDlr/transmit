@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { UserProfile } from "../../../../shared/types/Profile.type";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { CommonModule } from "@angular/common";
+import { UserSuggestion } from "../../types/UserSuggestion.interface";
 
 @Component({
   selector: "app-suggestion-tile",
@@ -11,7 +12,7 @@ import { CommonModule } from "@angular/common";
   styleUrl: "./suggestion-tile.component.css",
 })
 export class SuggestionTileComponent {
-  @Input() user!: UserProfile;
+  @Input() user!: UserSuggestion;
   isFollowed: boolean = false;
 
   constructor(private userService: UserProfileService) {}

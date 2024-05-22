@@ -277,7 +277,15 @@ export class UserProfileService {
       .storage
       .from('avatars')
       .remove([id + ".png", id + ".jpg", id + ".jpeg"]);
-      if(error) throw error;
+    if(error) throw error;
+  }
+
+  public async getAllUsers(): Promise<UserProfile[]> {
+    if (!this.user) throw new Error("User is not logged in");
+    const { data, error } = await this.supabase
+      .from("profiles")
+      .select('*')
+    return data as UserProfile[];
   }
 
 }

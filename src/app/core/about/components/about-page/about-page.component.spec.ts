@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AboutPageComponent } from './about-page.component';
 
 describe('AboutPageComponent', () => {
@@ -10,8 +9,8 @@ describe('AboutPageComponent', () => {
     await TestBed.configureTestingModule({
       imports: [AboutPageComponent]
     })
-    .compileComponents();
-    
+      .compileComponents();
+
     fixture = TestBed.createComponent(AboutPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
