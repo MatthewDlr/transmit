@@ -20,8 +20,8 @@ export class OnboardingFormComponent {
   setNameAndFirstName(name: string, last_name: string) {
     if(name.length > 0 && last_name.length > 0) {
       this.userService.setInfo(name, last_name).then(r => {
-        this.userService.onboard().then(r => console.log("Onboarding done !"));
-        this.router.navigate(["/feed"]).then(r => console.log("Onboarding finished!"));
+        this.userService.onboard().then(r => "");
+        this.router.navigate(["/feed"]).then(r => "");
       });
     }
   }
