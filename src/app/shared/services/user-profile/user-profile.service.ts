@@ -34,6 +34,39 @@ export class UserProfileService {
     return this.user.id;
   }
 
+  public async isOnboarded(): Promise<boolean> {
+    if (!this.user) throw Error("User is not connected");
+    const {data, error} = await this.supabase
+      .from("onboarding")
+      .select("")
+      .eq("user_id", this.user.id);
+
+    if (error) { throw error }
+    return !(data?.length === 0);
+  }
+
+  public async onboard() {
+    if (!this.user) throw Error("User is not connected");
+    const {error: insertError} = await this.supabase
+      .from('onboarding')
+      .insert([
+        {user_id: this.user.id}
+      ]);
+    if (insertError) throw insertError;
+  }
+
+  public async setInfo(name: string, last_name: string): Promise<void> {
+    if (!this.user) throw Error("User is not connected");
+    const {error: insertError} = await this.supabase
+      .from('profiles')
+      .update([
+        { name: name, last_name: last_name }
+      ]).eq(
+        "id", this.user.id
+      );
+    if (insertError) throw insertError;
+  }
+
   public async getProfileOf(userID: string): Promise<UserProfile> {
     const { data, error } = await this.supabase
       .from("profiles")

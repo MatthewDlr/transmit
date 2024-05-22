@@ -5,6 +5,8 @@ import { UserProfilePageComponent } from "./core/explore/components/user-profile
 import { ExplorePageComponent } from "./core/explore/components/explore-page/explore-page.component";
 import { MyPostsPageComponent } from "./core/account/components/my-posts-page/my-posts-page.component";
 import { RelationsPageComponent } from "./core/account/components/relations-page/relations-page.component";
+import {isOnboarded} from "./auth/guards/is-onboarded.guard";
+import {OnboardingFormComponent} from "./auth/components/onboarding-form/onboarding-form.component";
 
 export const routes: Routes = [
   {
@@ -15,32 +17,37 @@ export const routes: Routes = [
   {
     path: "feed",
     loadComponent: () => import("./core/feed/components/feed-page/feed-page.component").then((m) => m.FeedPageComponent),
-    canActivate: [isLoggedIn],
+    canActivate: [isLoggedIn, isOnboarded],
   },
   {
     path: "explore",
     component: ExplorePageComponent,
-    canActivate: [isLoggedIn],
+    canActivate: [isLoggedIn, isOnboarded],
   },
   {
     path: "account",
     loadComponent: () => import("./core/account/components/account-page/account-page.component").then((m) => m.AccountPageComponent),
-    canActivate: [isLoggedIn],
+    canActivate: [isLoggedIn, isOnboarded],
   },
   {
     path: "explore/user/:id",
     component: UserProfilePageComponent,
-    canActivate: [isLoggedIn],
+    canActivate: [isLoggedIn, isOnboarded],
   },
   {
     path: "myposts",
     component: MyPostsPageComponent,
-    canActivate: [isLoggedIn],
+    canActivate: [isLoggedIn, isOnboarded],
   },
   {
     path: "relations",
     component: RelationsPageComponent,
-    canActivate: [isLoggedIn],
+    canActivate: [isLoggedIn, isOnboarded],
+  },
+  {
+    path: "onboarding",
+    component: OnboardingFormComponent,
+    canActivate: [isLoggedIn]
   },
   {
     path: "about",

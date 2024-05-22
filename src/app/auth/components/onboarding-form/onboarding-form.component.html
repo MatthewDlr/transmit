@@ -1,0 +1,50 @@
+<div class="flex flex-col gap-5 w-full h-full p-5 items-center my-28 px-52 max-md:px-8 max-lg:px-20">
+  <div class="flex flex-col rounded-xl p-5 gap-3 bg-secondary-100">
+    <div class="flex flex-row justify-center w-full gap-3">
+      <div>
+        <label
+          for="name"
+          class="block font-medium leading-6 text-secondary-900"
+        >Name</label
+        >
+        <div class="mt-1">
+          <input
+            type="text"
+            name="name"
+            #name
+            id="name"
+            class="block w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+            placeholder="Aline"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label
+          for="last_name"
+          class="block font-medium leading-6 text-secondary-900"
+        >Family Name</label
+        >
+        <div class="mt-1">
+          <input
+            type="text"
+            name="last_name"
+            #last_name
+            id="last_name"
+            class="block w-full bg-transparent rounded-md border-0 py-1.5 text-secondary-900 shadow-sm ring-1 ring-inset ring-secondary-300 placeholder:text-secondary-900 placeholder:text-opacity-50 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+            placeholder="AUBERTIN"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col items-center">
+      <button
+        type="button"
+        (click)="setNameAndFirstName(name.value, last_name.value )"
+        class="inline-flex items-center rounded-md bg-red-900 px-3 py-2.5 font-semibold text-white shadow-sm hover:bg-secondary-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-900 whitespace-nowrap transition-all active:scale-95"
+      >
+        Join Transmit
+      </button>
+    </div>
+  </div>
+</div>
