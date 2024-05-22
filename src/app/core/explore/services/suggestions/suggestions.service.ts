@@ -16,17 +16,17 @@ export class SuggestionsService {
     this.currentUser = this.userService.userProfile()!;
 
     // This function is run whenever the isLoading signal change value
-    effect(() => {
+    effect( async () => {
       const isLoading: boolean = this.foafService.isLoading();
       if (!isLoading) {
         // All users are fully fetched now
-        const users: Promise<Set<UserSuggestion>> = this.addSuggestionByFriend(this.currentUser, 5)
-        // this.addSuggestionByTags(this.currentUser, 5, users).then(r => r);
+        await this.addSuggestionByFriend(this.currentUser, 5).then(r => r);
+        this.addSuggestionByTags(this.currentUser, 5).then(r => r);
       }
     });
   }
 
-  public async addSuggestionByFriend(user: UserProfile, limit: number): Promise<Set<UserSuggestion>> {
+  public async addSuggestionByFriend(user: UserProfile, limit: number): Promise<void> {
     try {
       // DirectFriendsID
       const directFriendsId: Set<string> = new Set(this.foafService.getFriendsIDsOf(user.id));
@@ -74,11 +74,11 @@ export class SuggestionsService {
     } catch (error) {
       console.error(`Error fetching friends for user ${user.id}:`, error);
     }
-    return this.users();
-
   }
 
-  public async addSuggestionByTags(myUser: UserProfile, limit: number, users: Promise<Set<UserSuggestion>>) {
+  public async addSuggestionByTags(myUser: UserProfile, limit: number) {
+    console.log('--')
+    console.log(this.users());
 
     function getUserProfile(suggestion: UserSuggestion): UserProfile {
       // Destructure the UserProfile properties from the suggestion object
@@ -95,49 +95,66 @@ export class SuggestionsService {
       return profiles;
     };
 
-    const directFriendsId: Set<string> = new Set(this.foafService.getFriendsIDsOf(myUser.id));
-    const directFriends: Set<UserProfile> = new Set();
-    for (const directFriendId of directFriendsId) {
-      directFriends.add(await this.foafService.getProfileOf(directFriendId));
-    }
-
-    const usersProfiles: Set<UserProfile> = getUserProfilesFromSuggestions(await users);
-    const doNotRecommend: Set<UserProfile> = new Set([...usersProfiles, ...directFriends]);
     const myInterestSet: Set<Interest> = new Set(await this.userService.getMyInterests());
-    const hashMapOfInterests: Map<UserProfile, number> = new Map<UserProfile, number>();
-
-    try {
-      const allUsers: UserProfile[] = await this.userService.getAllUsers();
-      for (const user of allUsers) {
-        if (!doNotRecommend.has(user)){
-          const userTagsSet: Set<Interest> = new Set<Interest>(await this.userService.getInterestsOf(user.id));
-
-          let commonCount = 0;
-          myInterestSet.forEach(value => {
-            if (userTagsSet.has(value)) {
-              commonCount++;
-            }
-          });
-
-          let totalCount = myInterestSet.size + userTagsSet.size;
-          if (totalCount == 0) {
-            totalCount = 2000;
-          }
-          console.log(commonCount);
-          console.log(totalCount);
-          hashMapOfInterests.set(user, commonCount/totalCount);
-        }
+    const myInterestSetString: Set<string> = new Set();
+    for (const userTag of myInterestSet) {
+      if (userTag.followed){
+        myInterestSetString.add(userTag.name);
       }
-      const entriesArray = Array.from(hashMapOfInterests);
-      console.log(entriesArray);
-      const entriesArrayLimited = entriesArray.slice(0, limit);
-      entriesArrayLimited.sort((a, b) => b[1] - a[1]);
-      const sortedHashMapOfInterests = new Map<UserProfile, number>(entriesArrayLimited);
-      sortedHashMapOfInterests.forEach((_, key) => {
-        this.users().add(key);
-      });
-    } catch (error) {
-      console.error(error);
     }
+
+    if (myInterestSetString.size != 0){
+      const directFriendsId: Set<string> = new Set(this.foafService.getFriendsIDsOf(myUser.id));
+      const directFriends: Set<UserProfile> = new Set();
+      for (const directFriendId of directFriendsId) {
+        directFriends.add(await this.foafService.getProfileOf(directFriendId));
+      }
+
+      const usersProfiles: Set<UserProfile> = getUserProfilesFromSuggestions(this.users());
+      const doNotRecommend: Set<UserProfile> = new Set([...usersProfiles, ...directFriends]);
+      console.log(doNotRecommend);
+      const hashMapOfInterests: Map<UserProfile, number> = new Map<UserProfile, number>();
+
+      try {
+        const allUsers: UserProfile[] = await this.userService.getAllUsers();
+        for (const user of allUsers) {
+          if (!doNotRecommend.has(user)){
+            console.log(user);
+            const userTagsSet: Set<Interest> = new Set<Interest>(await this.userService.getInterestsOf(user.id));
+            const userTagsSetString: Set<string> = new Set<string>();
+            for (const userTag of userTagsSet) {
+              if (userTag.followed){
+                userTagsSetString.add(userTag.name);
+              }
+            }
+            let commonCount = 0;
+            myInterestSetString.forEach(value => {
+              if (userTagsSetString.has(value)) {
+                commonCount++;
+              }
+            });
+
+            let totalCount = userTagsSetString.size + userTagsSetString.size;
+            if (totalCount == 0) {
+              totalCount = 2000;
+            }
+            hashMapOfInterests.set(user, commonCount/totalCount);
+          }
+        }
+        const entriesArray = Array.from(hashMapOfInterests);
+        const entriesArrayLimited = entriesArray.slice(0, limit);
+        entriesArrayLimited.sort((a, b) => b[1] - a[1]);
+        const sortedHashMapOfInterests = new Map<UserProfile, number>(entriesArrayLimited);
+        sortedHashMapOfInterests.forEach((_, key) => {
+          this.users().add(key);
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+
+
+
   }
 }
