@@ -6,7 +6,8 @@
     class="rounded-md max-h-[500px] object-fill"
   />
   <h2 class="mt-1">{{ post.content }}</h2>
-  <hr class="my-2" />
+  <div class="py-1.5"></div>
+  <!--<hr class="my-2" />-->
   <div class="flex flex-row place-content-between">
   <div style="display: flex; align-items: start">
     <p
@@ -32,4 +33,29 @@
     </div>
 
   </div>
+  <hr class="my-2" />
+  <div *ngFor="let comment of post.comments" class="max-h-24 overflow-auto mb-2">
+    <div class="p-2 bg-white rounded-xl w-full flex flex-col">
+      <div>{{comment.content}}</div>
+      <hr class="my-0.5" />
+      <div class="w-full flex flex-row gap-2 text-sm">
+        <a
+          class="author"
+          style="margin: 0"
+          href="explore/user/{{ comment.authorNumber }}"
+        >&#64;{{ comment.author }}</a
+        >
+        <p
+          class="timestamp"
+          style="margin-right: 10px"
+        >
+          {{ comment.created_at | date : "dd/MM/yyyy, H:mm" }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="flex">
+    <app-comment-form [post]="post"></app-comment-form>
+  </div>
+
 </div>

@@ -1,9 +1,11 @@
-import { Injectable, WritableSignal, effect, signal } from "@angular/core";
-import { AuthService } from "../../../auth/services/auth.service";
-import { User } from "@supabase/supabase-js";
-import { SupabaseService } from "../supabase/supabase.service";
-import { Post } from "../../types/Post.type";
-import { UserProfileService } from "../user-profile/user-profile.service";
+import {effect, Injectable, signal, WritableSignal} from "@angular/core";
+import {AuthService} from "../../../auth/services/auth.service";
+import {User} from "@supabase/supabase-js";
+import {SupabaseService} from "../supabase/supabase.service";
+import {Post} from "../../types/Post.type";
+import {UserProfileService} from "../user-profile/user-profile.service";
+import {Comment} from "../../types/Comment.type";
+
 
 @Injectable({
   providedIn: "root",
@@ -41,7 +43,12 @@ export class PostListService {
       author: `${item.profiles.name} ${item.profiles.last_name}`,
       authorNumber: `${item.created_by}`,
       image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
+      comments: []
     }));
+
+    for (const post of posts) {
+      post.comments = await this.getCommentList(post.id);
+    }
 
     const friendIDs = await this.userService.getMyFriendIDs();
 
@@ -120,4 +127,22 @@ export class PostListService {
     if (error) throw Error(error.message);
   }
 
+  async getCommentList(id: number): Promise<Comment[]> {
+    const { data, error } = await this.supabase
+      .from("comments")
+      .select("id, post_id, created_at, content, author_id, author")
+      .eq("post_id", id);
+
+    if (error) throw error;
+    if (!data) throw new Error("No post in database");
+
+    return data.map((item: any) => ({
+      id: item.id,
+      post_id: item.post_id,
+      content: item.content,
+      created_at: new Date(item.created_at),
+      author: item.author,
+      authorNumber: `${item.author_id}`,
+    }));
+  }
 }
