@@ -6,6 +6,7 @@ import {Post} from "../../types/Post.type";
 import {UserProfileService} from "../user-profile/user-profile.service";
 import {Comment} from "../../types/Comment.type";
 import {FoafService} from "../../../core/explore/services/foaf/foaf.service";
+import {UserProfile} from "../../types/Profile.type";
 
 
 @Injectable({
@@ -28,6 +29,18 @@ export class PostListService {
     });
   }
 
+  private dfsHelper(userId: string, depth: number, visited: Set<string>, hashMapUserIdDepth: Map<string, number>): void {
+    visited.add(userId);
+    const friendsId = this.foafService.getFriendsIDsOf(userId);
+
+    for (const friendId of friendsId) {
+      if (!visited.has(friendId)) {
+        hashMapUserIdDepth.set(friendId, depth);
+        this.dfsHelper(friendId, depth + 1, visited, hashMapUserIdDepth);
+      }
+    }
+  }
+
   public async getPostList(): Promise<Post[]> {
     const scoreToPosts: Map<Post,number> = new Map();
 
@@ -38,6 +51,9 @@ export class PostListService {
         getMyInterestsString.push(myTag.name);
       }
     }
+
+    const hashMapUserIdDepth: Map<string, number> = new Map();
+    const users: UserProfile[] = await this.userService.getAllUsers();
 
     const { data, error } = await this.supabase
       .from("posts")
@@ -56,6 +72,14 @@ export class PostListService {
       image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
       comments: []
     }));
+
+    // HashMap for {user, depth}
+    const fillhashMapUserIdDepth = (userId: string): void => {
+      const visited: Set<string> = new Set<string>();
+      this.dfsHelper(userId, 1, visited, hashMapUserIdDepth);
+    }
+
+    console.log(hashMapUserIdDepth);
 
     for (const post of posts) {
       post.comments = await this.getCommentList(post.id);
@@ -92,6 +116,7 @@ export class PostListService {
 
     }
     console.log(scoreToPosts);
+    console.log(posts);
     return posts;
   }
 
