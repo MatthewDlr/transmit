@@ -121,7 +121,6 @@ export class SuggestionsService {
               const userTagsSet: Set<Interest> = new Set<Interest>(await this.userService.getInterestsOf(user.id));
               const userTagsSetString: Set<string> = new Set<string>();
               for (const userTag of userTagsSet) {
-                console.log(userTag);
                 if (userTag.followed){
                   userTagsSetString.add(userTag.name);
                 }

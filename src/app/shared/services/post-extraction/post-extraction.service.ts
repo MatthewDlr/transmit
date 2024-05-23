@@ -6,7 +6,6 @@ import {Post} from "../../types/Post.type";
 import {UserProfileService} from "../user-profile/user-profile.service";
 import {Comment} from "../../types/Comment.type";
 import {FoafService} from "../../../core/explore/services/foaf/foaf.service";
-import {UserProfile} from "../../types/Profile.type";
 
 
 @Injectable({
@@ -42,6 +41,7 @@ export class PostListService {
   }
 
   public async getPostList(): Promise<Post[]> {
+    const postsToReturnedSorted: Post[] = [];
     const scoreToPosts: Map<Post,number> = new Map();
 
     const getMyInterests = await this.userService.getMyInterests();
@@ -52,8 +52,6 @@ export class PostListService {
       }
     }
 
-    const hashMapUserIdDepth: Map<string, number> = new Map();
-    const users: UserProfile[] = await this.userService.getAllUsers();
 
     const { data, error } = await this.supabase
       .from("posts")
@@ -74,26 +72,30 @@ export class PostListService {
     }));
 
     // HashMap for {user, depth}
-    const fillhashMapUserIdDepth = (userId: string): void => {
+    const hashMapUserIdDepth: Map<string, number> = new Map();
+    const fillHashMapUserIdDepth = (userId: string): void => {
       const visited: Set<string> = new Set<string>();
       this.dfsHelper(userId, 1, visited, hashMapUserIdDepth);
     }
+    fillHashMapUserIdDepth(this.userService.getUserID());
 
-    console.log(hashMapUserIdDepth);
 
+    const usersId: string[] = (await this.userService.getAllUsers()).map((user) => user.id);
+    for (const userId of usersId){
+      if (!Array.from(hashMapUserIdDepth.keys()).includes(userId)){
+        hashMapUserIdDepth.set(userId, -1);
+      }
+    }
     for (const post of posts) {
       post.comments = await this.getCommentList(post.id);
       // Score for Date
       const now = new Date();
       const differenceInDays = Math.floor((now.getTime() - post.timestamp.getTime()) / (1000 * 60 * 60 * 24));
-      const scoreForDate: number = Math.exp((-1)*differenceInDays);
+      const scoreForDate: number = Math.exp((-0.1)*differenceInDays);
       scoreToPosts.set(post, scoreForDate);
 
-      // TODO : Score for depth
-      const postAuthor = await this.foafService.getProfileOf(post.authorNumber);
-
       // Score for tags
-      const targetUserId = post.author;
+      const targetUserId = post.authorNumber;
       const targetUserInterests = await this.userService.getInterestsOf(targetUserId);
       const targetUserInterestString: string[] = [];
       for (const targetUserInterest of targetUserInterests){
@@ -111,13 +113,26 @@ export class PostListService {
       let totalCount = getMyInterestsString.length + targetUserInterestString.length;
       let jacquardIndex = commonCount/(totalCount - commonCount)
 
+      let scoreForDepth;
+      let depth : number = hashMapUserIdDepth.get(targetUserId) ?? -1;
+      if (depth == -1){
+        scoreForDepth = 0;
+      }
+      else {
+        scoreForDepth = 1/depth
+      }
       // Final score ---
-      scoreToPosts.set(post, jacquardIndex + scoreForDate);
-
+      scoreToPosts.set(post, jacquardIndex + scoreForDate + scoreForDepth);
     }
-    console.log(scoreToPosts);
-    console.log(posts);
-    return posts;
+    // console.log(scoreToPosts);
+    const entriesArray = Array.from(scoreToPosts);
+    entriesArray.sort((a, b) => b[1] - a[1]);
+    const sortedHashMapOfInterests = new Map<Post, number>(entriesArray);
+    sortedHashMapOfInterests.forEach((_, key) => {
+      postsToReturnedSorted.push(key);
+    });
+
+    return postsToReturnedSorted;
   }
 
   async isPostLiked(postId: number): Promise<boolean> {
