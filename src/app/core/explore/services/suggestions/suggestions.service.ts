@@ -3,7 +3,7 @@ import { UserProfile } from "../../../../shared/types/Profile.type";
 import { FoafService } from "../foaf/foaf.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { UserSuggestion } from "../../types/UserSuggestion.interface";
-import {Interest} from "../../../../shared/types/Interest.type";
+import { Interest } from "../../../../shared/types/Interest.type";
 
 @Injectable({
   providedIn: "root",
@@ -11,17 +11,18 @@ import {Interest} from "../../../../shared/types/Interest.type";
 export class SuggestionsService {
   users: WritableSignal<Set<UserSuggestion>> = signal(new Set());
   private readonly currentUser: UserProfile;
+  private isLoaded: boolean = false;
 
   constructor(private foafService: FoafService, private userService: UserProfileService) {
     this.currentUser = this.userService.userProfile()!;
 
     // This function is run whenever the isLoading signal change value
-    effect( async () => {
+    effect(async () => {
       const isLoading: boolean = this.foafService.isLoading();
-      if (!isLoading) {
-        // All users are fully fetched now
-        await this.addSuggestionByFriend(this.currentUser, 5).then(r => r);
-        this.addSuggestionByTags(this.currentUser, 5).then(r => r);
+      if (!isLoading && !this.isLoaded) {
+        this.isLoaded = true;
+        await this.addSuggestionByFriend(this.currentUser, 5).then((r) => r);
+        this.addSuggestionByTags(this.currentUser, 5).then((r) => r);
       }
     });
   }
@@ -45,15 +46,15 @@ export class SuggestionsService {
         }
       }
 
-      const countOccurrencesWithMap = (list: UserProfile[]): Map<string, { profile: UserProfile, count: number }> => {
-        const occurrenceMap = new Map<string, { profile: UserProfile, count: number }>();
-        list.forEach(profile => {
+      const countOccurrencesWithMap = (list: UserProfile[]): Map<string, { profile: UserProfile; count: number }> => {
+        const occurrenceMap = new Map<string, { profile: UserProfile; count: number }>();
+        list.forEach((profile) => {
           const key = profile.id;
           const entry = occurrenceMap.get(key);
           if (entry) {
             entry.count += 1;
           } else {
-            occurrenceMap.set(key, {profile, count: 1});
+            occurrenceMap.set(key, { profile, count: 1 });
           }
         });
         return occurrenceMap;
@@ -65,10 +66,10 @@ export class SuggestionsService {
       // Limit to limit value unique suggestions
       const limitedSuggestions = sortedSuggestions.slice(0, limit);
 
-      limitedSuggestions.forEach(({profile, count}) => {
+      limitedSuggestions.forEach(({ profile, count }) => {
         this.users().add({
           ...profile,
-          friendsInCommon: count
+          friendsInCommon: count,
         });
       });
     } catch (error) {
@@ -87,7 +88,7 @@ export class SuggestionsService {
 
     const getUserProfilesFromSuggestions = (suggestions: Set<UserSuggestion>): Set<UserProfile> => {
       const profiles: Set<UserProfile> = new Set();
-      suggestions.forEach(suggestion => {
+      suggestions.forEach((suggestion) => {
         const userProfile = getUserProfile(suggestion); // Assuming getUserProfile function is defined
         profiles.add(userProfile);
       });
@@ -97,12 +98,12 @@ export class SuggestionsService {
     const myInterestSet: Set<Interest> = new Set(await this.userService.getMyInterests());
     const myInterestSetString: Set<string> = new Set();
     for (const userTag of myInterestSet) {
-      if (userTag.followed){
+      if (userTag.followed) {
         myInterestSetString.add(userTag.name);
       }
     }
 
-    if (myInterestSetString.size != 0){
+    if (myInterestSetString.size != 0) {
       const directFriendsId: Set<string> = new Set(this.foafService.getFriendsIDsOf(myUser.id));
       const directFriends: Set<UserProfile> = new Set();
       for (const directFriendId of directFriendsId) {
@@ -120,20 +121,20 @@ export class SuggestionsService {
             const userTagsSet: Set<Interest> = new Set<Interest>(await this.userService.getInterestsOf(user.id));
             const userTagsSetString: Set<string> = new Set<string>();
             for (const userTag of userTagsSet) {
-              if (userTag.followed){
+              if (userTag.followed) {
                 userTagsSetString.add(userTag.name);
               }
             }
             let commonCount = 0;
-            myInterestSetString.forEach(value => {
+            myInterestSetString.forEach((value) => {
               if (userTagsSetString.has(value)) {
                 commonCount++;
               }
             });
 
             let totalCount = myInterestSetString.size + userTagsSetString.size;
-            hashMapOfInterests.set(user, commonCount/(totalCount - commonCount));
-            console.log(commonCount/(totalCount - commonCount));
+            hashMapOfInterests.set(user, commonCount / (totalCount - commonCount));
+            console.log(commonCount / (totalCount - commonCount));
           }
         }
         const entriesArray = Array.from(hashMapOfInterests);
@@ -147,9 +148,5 @@ export class SuggestionsService {
         console.error(error);
       }
     }
-
-
-
-
   }
 }
