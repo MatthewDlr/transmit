@@ -22,21 +22,21 @@ Run `pnpm dev` for a dev server ; then, navigate to `http://localhost:4200/`. Th
 
 ### Feed
 
-#### See friend's posts
-
-@ghislaindemael
-
-#### Post new content
-
-@ghislaindemael
-
-#### Like contents
-
-@ghislaindemael
-
 #### Recommended posts
 
 @MeowChan27
+
+#### Post new content
+
+Yes, networking is cool, but a network is not here just to exist. It is here for you to share content with your relations. A social network without the ability to share content is useless, thus Transmit allows you to share your opinion, eventually joining an image to it.
+
+#### Comments
+
+What is interesting with humans is that everybody has different opinions. And from these differences arises interesting conversations. However conversations need an appropriate support to exist, which we believed to be a comment section under each main post. Comments are also updated in realtime.
+
+#### Like content
+
+As writing a "i love this content" comment for each post you like is not the best user experience, we chose a seamless approach by implement a small "Like" button to show your love for the content you appreciate.
 
 ### Explore
 
@@ -66,8 +66,8 @@ We provide a basic interface to modify user information. The forms are automatic
 
 #### Manage relations
 
-@ghislaindemael
+Relations are an essential concept in Transmit. This is why having an easy access to manage them is required. Friend breakups may appear in many occasions, so removing a friendship link should be done quickly, as well as removing followers that are not wanted anymore. 
 
 #### Manage posted content
 
-@ghislaindemael
+Ideas an opinions come and go. You might say something one day and regret saying it a few days later. Same goes for posts published online, sometimes you do not want some content to be visible anymore. Thus, a content management panel was required to review ones own posts and delete them if the wil is present.  
