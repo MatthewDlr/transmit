@@ -21,7 +21,6 @@ export class SuggestionsService {
       if (!isLoading) {
         // All users are fully fetched now
         await this.addSuggestionByFriend(this.currentUser, 5).then(r => r);
-        console.log(this.users());
         this.addSuggestionByTags(this.currentUser, 5).then(r => r);
       }
     });

@@ -5,6 +5,7 @@ import {SupabaseService} from "../supabase/supabase.service";
 import {Post} from "../../types/Post.type";
 import {UserProfileService} from "../user-profile/user-profile.service";
 import {Comment} from "../../types/Comment.type";
+import {FoafService} from "../../../core/explore/services/foaf/foaf.service";
 
 
 @Injectable({
@@ -15,7 +16,7 @@ export class PostListService {
   user: User | undefined;
   postList: WritableSignal<Post[] | null> = signal(null);
 
-  constructor(private auth: AuthService, private supabaseService: SupabaseService, private userService: UserProfileService) {
+  constructor(private auth: AuthService, private supabaseService: SupabaseService, private userService: UserProfileService, private foafService: FoafService) {
     effect(() => {
       this.user = this.auth.userSession()?.user;
       if (!this.user) return;
@@ -28,6 +29,7 @@ export class PostListService {
   }
 
   public async getPostList(): Promise<Post[]> {
+    const scoreToPosts: Map<Post,number> = new Map();
     const { data, error } = await this.supabase
       .from("posts")
       .select("id, created_at, created_by, content, profiles(name, last_name), picture_url")
@@ -48,7 +50,20 @@ export class PostListService {
 
     for (const post of posts) {
       post.comments = await this.getCommentList(post.id);
+      // Score for Date
+      const now = new Date();
+      const differenceInDays = Math.floor((now.getTime() - post.timestamp.getTime()) / (1000 * 60 * 60 * 24));
+      const scoreForDate: number = Math.exp((-1)*differenceInDays);
+      scoreToPosts.set(post, scoreForDate);
+
+      // TODO : Score for depth
+      const postAuthor = await this.foafService.getProfileOf(post.authorNumber);
+
+      // TODO : Score for Jacquard Index
     }
+
+    console.log(scoreToPosts);
+    return posts;
 
     const friendIDs = await this.userService.getMyFriendIDs();
 
