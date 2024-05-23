@@ -111,7 +111,6 @@ export class SuggestionsService {
 
       const usersProfiles: Set<UserProfile> = getUserProfilesFromSuggestions(this.users());
       const doNotRecommend: Set<UserProfile> = new Set([...usersProfiles, ...directFriends, myUser]);
-      console.log(doNotRecommend);
       const hashMapOfInterests: Map<UserProfile, number> = new Map<UserProfile, number>();
 
       try {

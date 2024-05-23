@@ -30,6 +30,15 @@ export class PostListService {
 
   public async getPostList(): Promise<Post[]> {
     const scoreToPosts: Map<Post,number> = new Map();
+
+    const getMyInterests = await this.userService.getMyInterests();
+    const getMyInterestsString: string[] = [];
+    for (const myTag of getMyInterests) {
+      if (myTag.followed){
+        getMyInterestsString.push(myTag.name);
+      }
+    }
+
     const { data, error } = await this.supabase
       .from("posts")
       .select("id, created_at, created_by, content, profiles(name, last_name), picture_url")
@@ -59,19 +68,31 @@ export class PostListService {
       // TODO : Score for depth
       const postAuthor = await this.foafService.getProfileOf(post.authorNumber);
 
-      // TODO : Score for Jacquard Index
-    }
+      // Score for tags
+      const targetUserId = post.author;
+      const targetUserInterests = await this.userService.getInterestsOf(targetUserId);
+      const targetUserInterestString: string[] = [];
+      for (const targetUserInterest of targetUserInterests){
+        if (targetUserInterest.followed){
+          targetUserInterestString.push(targetUserInterest.name);
+        }
+      }
+      let commonCount = 0;
+      getMyInterestsString.forEach(value => {
+        if (targetUserInterestString.includes(value)) {
+          commonCount++;
+        }
+      });
 
+      let totalCount = getMyInterestsString.length + targetUserInterestString.length;
+      let jacquardIndex = commonCount/(totalCount - commonCount)
+
+      // Final score ---
+      scoreToPosts.set(post, jacquardIndex + scoreForDate);
+
+    }
     console.log(scoreToPosts);
     return posts;
-
-    const friendIDs = await this.userService.getMyFriendIDs();
-
-    const filteredPosts: Post[] = posts.filter((item: any) => {
-      return friendIDs.includes(item.authorNumber);
-    })
-
-    return filteredPosts;
   }
 
   async isPostLiked(postId: number): Promise<boolean> {
