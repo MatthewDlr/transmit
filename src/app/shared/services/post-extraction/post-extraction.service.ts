@@ -7,7 +7,6 @@ import {UserProfileService} from "../user-profile/user-profile.service";
 import {Comment} from "../../types/Comment.type";
 import {FoafService} from "../../../core/explore/services/foaf/foaf.service";
 
-
 @Injectable({
   providedIn: "root",
 })
@@ -28,30 +27,43 @@ export class PostListService {
     });
   }
 
-  private dfsHelper(userId: string, depth: number, visited: Set<string>, hashMapUserIdDepth: Map<string, number>): void {
+  private dfsHelper(hashMapUserIndex: Map<string, number>,indexWrapper: { value: number }, userId: string, depth: number, visited: Set<string>, hashMapUserIdDepth: Map<string, number>): void {
     visited.add(userId);
     const friendsId = this.foafService.getFriendsIDsOf(userId);
 
     for (const friendId of friendsId) {
       if (!visited.has(friendId)) {
+        hashMapUserIndex.set(friendId, indexWrapper.value);
+        indexWrapper.value += 1;
         hashMapUserIdDepth.set(friendId, depth);
-        this.dfsHelper(friendId, depth + 1, visited, hashMapUserIdDepth);
+        this.dfsHelper(hashMapUserIndex, indexWrapper, friendId, depth + 1, visited, hashMapUserIdDepth);
       }
     }
   }
 
-  public async getPostList(): Promise<Post[]> {
-    const postsToReturnedSorted: Post[] = [];
-    const scoreToPosts: Map<Post,number> = new Map();
-
-    const getMyInterests = await this.userService.getMyInterests();
-    const getMyInterestsString: string[] = [];
-    for (const myTag of getMyInterests) {
-      if (myTag.followed){
-        getMyInterestsString.push(myTag.name);
-      }
+  private cosineSimilarity = (vectorA: number[], vectorB: number[]): number => {
+    if (vectorA.length !== vectorB.length) {
+      throw new Error("Vector should be same size");
     }
 
+    const dotProduct = vectorA.reduce((acc, value, index) => acc + value * vectorB[index], 0);
+
+    const normA = Math.sqrt(vectorA.reduce((acc, value) => acc + value ** 2, 0));
+    const normB = Math.sqrt(vectorB.reduce((acc, value) => acc + value ** 2, 0));
+
+    if (normA === 0 || normB === 0) {
+      return 0;
+    } else {
+      return dotProduct / (normA * normB);
+    }
+  };
+
+  public async getPostList(): Promise<Post[]> {
+    const postsToReturnedSorted: Post[] = [];
+    const scoreToPosts: Map<Post, number> = new Map();
+
+    const getMyInterests = await this.userService.getMyInterests();
+    const getMyInterestsString: string[] = getMyInterests.filter(tag => tag.followed).map(tag => tag.name);
 
     const { data, error } = await this.supabase
       .from("posts")
@@ -71,69 +83,106 @@ export class PostListService {
       comments: []
     }));
 
-    // HashMap for {user, depth}
     const hashMapUserIdDepth: Map<string, number> = new Map();
-    const fillHashMapUserIdDepth = (userId: string): void => {
+    let hashMapUserIndex: Map<string, number> = new Map();
+    const indexWrapper = { value: 0 };
+
+    const fillHashMapUserIdDepth = (indexWrapper: { value: number }, userId: string): void => {
       const visited: Set<string> = new Set<string>();
-      this.dfsHelper(userId, 1, visited, hashMapUserIdDepth);
+      this.dfsHelper(hashMapUserIndex, indexWrapper, userId, 1, visited, hashMapUserIdDepth);
     }
-    fillHashMapUserIdDepth(this.userService.getUserID());
 
+    fillHashMapUserIdDepth(indexWrapper, this.userService.getUserID());
 
-    const usersId: string[] = (await this.userService.getAllUsers()).map((user) => user.id);
-    for (const userId of usersId){
-      if (!Array.from(hashMapUserIdDepth.keys()).includes(userId)){
+    const users = await this.userService.getAllUsers();
+    const usersId: string[] = users.map(user => user.id);
+
+    usersId.forEach(userId => {
+      if (!hashMapUserIdDepth.has(userId)) {
+        hashMapUserIndex.set(userId, indexWrapper.value);
+        indexWrapper.value += 1;
         hashMapUserIdDepth.set(userId, -1);
       }
-    }
-    for (const post of posts) {
-      post.comments = await this.getCommentList(post.id);
-      // Score for Date
-      const now = new Date();
-      const differenceInDays = Math.floor((now.getTime() - post.timestamp.getTime()) / (1000 * 60 * 60 * 24));
-      const scoreForDate: number = Math.exp((-0.1)*differenceInDays);
-      scoreToPosts.set(post, scoreForDate);
-
-      // Score for tags
-      const targetUserId = post.authorNumber;
-      const targetUserInterests = await this.userService.getInterestsOf(targetUserId);
-      const targetUserInterestString: string[] = [];
-      for (const targetUserInterest of targetUserInterests){
-        if (targetUserInterest.followed){
-          targetUserInterestString.push(targetUserInterest.name);
-        }
-      }
-      let commonCount = 0;
-      getMyInterestsString.forEach(value => {
-        if (targetUserInterestString.includes(value)) {
-          commonCount++;
-        }
-      });
-
-      let totalCount = getMyInterestsString.length + targetUserInterestString.length;
-      let jacquardIndex = commonCount/(totalCount - commonCount)
-
-      let scoreForDepth;
-      let depth : number = hashMapUserIdDepth.get(targetUserId) ?? -1;
-      if (depth == -1){
-        scoreForDepth = 0;
-      }
-      else {
-        scoreForDepth = 1/depth
-      }
-      // Final score ---
-      scoreToPosts.set(post, jacquardIndex + scoreForDate + scoreForDepth);
-    }
-    // console.log(scoreToPosts);
-    const entriesArray = Array.from(scoreToPosts);
-    entriesArray.sort((a, b) => b[1] - a[1]);
-    const sortedHashMapOfInterests = new Map<Post, number>(entriesArray);
-    sortedHashMapOfInterests.forEach((_, key) => {
-      postsToReturnedSorted.push(key);
     });
 
+    const matrixUserPostLikes: number[][] = Array.from({ length: users.length }, () => Array(posts.length).fill(0));
+
+    const now = new Date();
+    const commentsPromises = posts.map(post => this.getCommentList(post.id));
+    const comments = await Promise.all(commentsPromises);
+
+    const fillMatrix = async (posts: Post[], comments: Comment[][]): Promise<number[][]> => {
+      for (let i = 0; i < posts.length; i++) {
+        const post = posts[i];
+        post.comments = comments[i];
+
+        const usersLikePost = await this.getUsersIdThatLikedPostId(post.id);
+        for (const userListPost of usersLikePost){
+          const userIndex = hashMapUserIndex.get(userListPost);
+          if (typeof userIndex !== "undefined"){
+            matrixUserPostLikes[userIndex][i] = 1;
+          }
+        }
+      }
+      return matrixUserPostLikes;
+    }
+
+    let userScoreSimilarity: Map<number, number> = new Map();
+    const matrixUserPostLikesComplete = await fillMatrix(posts, comments);
+    const myUserId = this.userService.getUserID();
+    const userIndex = hashMapUserIndex.get(myUserId);
+    if (typeof userIndex !== "undefined") {
+      const similarities: number[] = [];
+      for (const row of matrixUserPostLikesComplete) {
+        similarities.push(this.cosineSimilarity(matrixUserPostLikesComplete[userIndex], row));
+      }
+      similarities.forEach((similarity, index) => {
+        userScoreSimilarity.set(index, similarity);
+      });
+    }
+
+    for (let i: number = 0; i < posts.length; i++) {
+      const post = posts[i];
+      const differenceInDays = (now.getTime() - post.timestamp.getTime()) / (1000 * 60 * 60 * 24);
+      const scoreForDate: number = Math.exp(-0.1 * differenceInDays);
+
+      const targetUserId = post.authorNumber;
+      const targetUserInterests = await this.userService.getInterestsOf(targetUserId);
+      const targetUserInterestString: string[] = targetUserInterests.filter(interest => interest.followed).map(interest => interest.name);
+
+      const commonCount = getMyInterestsString.filter(value => targetUserInterestString.includes(value)).length;
+      const totalCount = getMyInterestsString.length + targetUserInterestString.length;
+      const jacquardIndex = commonCount / (totalCount - commonCount);
+
+      // const depth: number = hashMapUserIdDepth.get(targetUserId) ?? -1;
+      let scoreForDepth: number = -1;
+      const depth = hashMapUserIdDepth.get(targetUserId);
+      if (depth !== undefined) {
+        if (targetUserId != myUserId){
+          scoreForDepth = 1 / depth;
+        }
+        else {
+          scoreForDepth = 1;
+        }
+      }
+
+      const userIndex = hashMapUserIndex.get(targetUserId);
+      let scoreForSimilarity: number = 0;
+      if (typeof userIndex !== "undefined"){
+        const targetUserScoreSimilarity = userScoreSimilarity.get(userIndex);
+        if (typeof targetUserScoreSimilarity !== "undefined"){
+          scoreForSimilarity = targetUserScoreSimilarity;
+        }
+      }
+      scoreToPosts.set(post, 0.2*scoreForDate + 0.2*jacquardIndex + 0.4*scoreForDepth + 0.2*scoreForSimilarity);
+    }
+
+    const entriesArray = Array.from(scoreToPosts.entries());
+    entriesArray.sort((a, b) => b[1] - a[1]);
+    postsToReturnedSorted.push(...entriesArray.map(entry => entry[0]));
+    console.log(entriesArray);
     return postsToReturnedSorted;
-  }
+    }
 
   async isPostLiked(postId: number): Promise<boolean> {
     const { data, error } = await this.supabase
@@ -153,6 +202,21 @@ export class PostListService {
         {post_liked: id, liked_by: this.user?.id},
       ]);
     if (error) throw Error(error.message);
+  }
+
+  async getUsersIdThatLikedPostId(postId: number): Promise<string[]> {
+    const { data, error } = await this.supabase
+      .from("likes")
+      .select("liked_by")
+      .eq("post_liked", postId);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+    if (!data) {
+      return [];
+    }
+    return data.map((entry: { liked_by: string }) => entry.liked_by);
   }
 
   async unlikePost(id: number) {
