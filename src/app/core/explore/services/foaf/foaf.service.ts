@@ -14,6 +14,7 @@ export class FoafService {
   private supabase: SupabaseClient = this.supabaseService.client;
   private userGraph: AdjacencyNodeList = new AdjacencyNodeList();
   public isLoading: WritableSignal<boolean> = signal(true);
+  // public fetchSuggestedFriends: WritableSignal<boolean> = signal(true);
   public readonly DEFAULT_MAX_DEPTH = 2;
 
   constructor(private supabaseService: SupabaseService, private userService: UserProfileService) {

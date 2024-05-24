@@ -17,7 +17,6 @@ export class SidePeekService {
   async setUser(userID: string, depth: number, followers: number) {
     const user: UserProfile = await this.userService.getProfileOf(userID);
     const interests: Interest[] = await this.userService.getInterestsOf(userID);
-
     this.currentUser.set(user);
     this.userInterests.set(interests);
     this.distanceFromYou.set(depth);

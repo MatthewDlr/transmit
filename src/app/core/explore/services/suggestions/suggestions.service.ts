@@ -21,7 +21,6 @@ export class SuggestionsService {
       if (!isLoading) {
         // All users are fully fetched now
         await this.addSuggestionByFriend(this.currentUser, 5).then(r => r);
-        console.log(this.users());
         this.addSuggestionByTags(this.currentUser, 5).then(r => r);
       }
     });
@@ -112,30 +111,29 @@ export class SuggestionsService {
 
       const usersProfiles: Set<UserProfile> = getUserProfilesFromSuggestions(this.users());
       const doNotRecommend: Set<UserProfile> = new Set([...usersProfiles, ...directFriends, myUser]);
-      console.log(doNotRecommend);
       const hashMapOfInterests: Map<UserProfile, number> = new Map<UserProfile, number>();
 
       try {
         const allUsers: UserProfile[] = await this.userService.getAllUsers();
         for (const user of allUsers) {
-          if (![...doNotRecommend].some((profile: UserProfile) => profile.id === user.id)) {
-            const userTagsSet: Set<Interest> = new Set<Interest>(await this.userService.getInterestsOf(user.id));
-            const userTagsSetString: Set<string> = new Set<string>();
-            for (const userTag of userTagsSet) {
-              if (userTag.followed){
-                userTagsSetString.add(userTag.name);
+          if (user && user.name){
+            if (![...doNotRecommend].some((profile: UserProfile) => profile.id === user.id)) {
+              const userTagsSet: Set<Interest> = new Set<Interest>(await this.userService.getInterestsOf(user.id));
+              const userTagsSetString: Set<string> = new Set<string>();
+              for (const userTag of userTagsSet) {
+                if (userTag.followed){
+                  userTagsSetString.add(userTag.name);
+                }
               }
+              let commonCount = 0;
+              myInterestSetString.forEach(value => {
+                if (userTagsSetString.has(value)) {
+                  commonCount++;
+                }
+              });
+              let totalCount = myInterestSetString.size + userTagsSetString.size;
+              hashMapOfInterests.set(user, commonCount/(totalCount - commonCount));
             }
-            let commonCount = 0;
-            myInterestSetString.forEach(value => {
-              if (userTagsSetString.has(value)) {
-                commonCount++;
-              }
-            });
-
-            let totalCount = myInterestSetString.size + userTagsSetString.size;
-            hashMapOfInterests.set(user, commonCount/(totalCount - commonCount));
-            console.log(commonCount/(totalCount - commonCount));
           }
         }
         const entriesArray = Array.from(hashMapOfInterests);
