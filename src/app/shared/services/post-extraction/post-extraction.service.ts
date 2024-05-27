@@ -27,15 +27,17 @@ export class PostListService {
     });
   }
 
-  private bfsHelper(hashMapUserIndex: Map<string, number>, indexWrapper: { value: number }, userId: string, depth: number, hashMapUserIdDepth: Map<string, number>): void {
+  private bfsHelper(hashMapUserIndex: Map<string, number>, indexWrapper: {
+    value: number
+  }, userId: string, depth: number, hashMapUserIdDepth: Map<string, number>): void {
     const queue: Array<{ id: string, depth: number }> = [];
     const visited: Set<string> = new Set();
 
-    queue.push({ id: userId, depth: depth });
+    queue.push({id: userId, depth: depth});
     visited.add(userId);
 
     while (queue.length > 0) {
-      const { id, depth } = queue.shift()!;
+      const {id, depth} = queue.shift()!;
       const friendsId = this.foafService.getFriendsIDsOf(id);
 
       for (const friendId of friendsId) {
@@ -44,7 +46,7 @@ export class PostListService {
           hashMapUserIndex.set(friendId, indexWrapper.value);
           indexWrapper.value += 1;
           hashMapUserIdDepth.set(friendId, depth + 1);
-          queue.push({ id: friendId, depth: depth + 1 });
+          queue.push({id: friendId, depth: depth + 1});
         }
       }
     }
@@ -74,7 +76,7 @@ export class PostListService {
     const getMyInterests = await this.userService.getMyInterests();
     const getMyInterestsString: string[] = getMyInterests.filter(tag => tag.followed).map(tag => tag.name);
 
-    const { data, error } = await this.supabase
+    const {data, error} = await this.supabase
       .from("posts")
       .select("id, created_at, created_by, content, profiles(name, last_name), picture_url")
       .eq("deleted", false);
@@ -94,7 +96,7 @@ export class PostListService {
 
     const hashMapUserIdDepth: Map<string, number> = new Map();
     let hashMapUserIndex: Map<string, number> = new Map();
-    const indexWrapper = { value: 0 };
+    const indexWrapper = {value: 0};
 
     const fillHashMapUserIdDepth = (indexWrapper: { value: number }, userId: string): void => {
       this.bfsHelper(hashMapUserIndex, indexWrapper, userId, 1, hashMapUserIdDepth);
@@ -113,7 +115,7 @@ export class PostListService {
       }
     });
 
-    const matrixUserPostLikes: number[][] = Array.from({ length: users.length }, () => Array(posts.length).fill(0));
+    const matrixUserPostLikes: number[][] = Array.from({length: users.length}, () => Array(posts.length).fill(0));
 
     const now = new Date();
     const commentsPromises = posts.map(post => this.getCommentList(post.id));
@@ -125,9 +127,9 @@ export class PostListService {
         post.comments = comments[i];
 
         const usersLikePost = await this.getUsersIdThatLikedPostId(post.id);
-        for (const userListPost of usersLikePost){
+        for (const userListPost of usersLikePost) {
           const userIndex = hashMapUserIndex.get(userListPost);
-          if (typeof userIndex !== "undefined"){
+          if (typeof userIndex !== "undefined") {
             matrixUserPostLikes[userIndex][i] = 1;
           }
         }
@@ -166,23 +168,22 @@ export class PostListService {
       let scoreForDepth: number = -1;
       const depth = hashMapUserIdDepth.get(targetUserId);
       if (depth !== undefined) {
-        if (targetUserId != myUserId){
+        if (targetUserId != myUserId) {
           scoreForDepth = 1 / depth;
-        }
-        else {
+        } else {
           scoreForDepth = 1;
         }
       }
 
       const userIndex = hashMapUserIndex.get(targetUserId);
       let scoreForSimilarity: number = 0;
-      if (typeof userIndex !== "undefined"){
+      if (typeof userIndex !== "undefined") {
         const targetUserScoreSimilarity = userScoreSimilarity.get(userIndex);
-        if (typeof targetUserScoreSimilarity !== "undefined"){
+        if (typeof targetUserScoreSimilarity !== "undefined") {
           scoreForSimilarity = targetUserScoreSimilarity;
         }
       }
-      scoreToPosts.set(post, 0.2*scoreForDate + 0.2*jacquardIndex + 0.4*scoreForDepth + 0.2*scoreForSimilarity);
+      scoreToPosts.set(post, 0.2 * scoreForDate + 0.2 * jacquardIndex + 0.4 * scoreForDepth + 0.2 * scoreForSimilarity);
     }
 
     const entriesArray = Array.from(scoreToPosts.entries());
@@ -190,10 +191,10 @@ export class PostListService {
     postsToReturnedSorted.push(...entriesArray.map(entry => entry[0]));
     console.log(entriesArray);
     return postsToReturnedSorted;
-    }
+  }
 
   async isPostLiked(postId: number): Promise<boolean> {
-    const { data, error } = await this.supabase
+    const {data, error} = await this.supabase
       .from("likes")
       .select()
       .eq("post_liked", postId)
@@ -204,7 +205,7 @@ export class PostListService {
   }
 
   async likePost(id: number) {
-    const { error} = await this.supabase
+    const {error} = await this.supabase
       .from("likes")
       .insert([
         {post_liked: id, liked_by: this.user?.id},
@@ -213,7 +214,7 @@ export class PostListService {
   }
 
   async getUsersIdThatLikedPostId(postId: number): Promise<string[]> {
-    const { data, error } = await this.supabase
+    const {data, error} = await this.supabase
       .from("likes")
       .select("liked_by")
       .eq("post_liked", postId);
@@ -228,7 +229,7 @@ export class PostListService {
   }
 
   async unlikePost(id: number) {
-    const { error} = await this.supabase
+    const {error} = await this.supabase
       .from("likes")
       .delete()
       .eq("post_liked", id)
@@ -248,7 +249,7 @@ export class PostListService {
   async isChristmasPostLiked() {
     if (!this.user) return;
 
-    const { data, error } = await this.supabase
+    const {data, error} = await this.supabase
       .from("eastereggs")
       .select("christmas_found")
       .eq("user_id", this.user?.id);
@@ -261,7 +262,7 @@ export class PostListService {
   async likeChristmasPost() {
     if (!this.user) return;
 
-    const { error } = await this.supabase
+    const {error} = await this.supabase
       .from("eastereggs")
       .upsert([
         {
@@ -276,7 +277,7 @@ export class PostListService {
   }
 
   async getCommentList(id: number): Promise<Comment[]> {
-    const { data, error } = await this.supabase
+    const {data, error} = await this.supabase
       .from("comments")
       .select("id, post_id, created_at, content, author_id, author")
       .eq("post_id", id);
@@ -292,5 +293,32 @@ export class PostListService {
       author: item.author,
       authorNumber: `${item.author_id}`,
     }));
+  }
+
+  async getMyPosts() {
+    if (!this.user) return;
+    const {data, error} = await this.supabase
+      .from("posts")
+      .select("id, created_at, created_by, content, profiles(name, last_name), picture_url")
+      .eq("deleted", false)
+      .eq("created_by", this.user.id);
+
+    if (error) throw error;
+    if (!data) throw new Error("No post in database");
+
+    const posts: Post[] = data.map((item: any) => ({
+      id: item.id,
+      content: item.content,
+      timestamp: new Date(item.created_at),
+      author: `${item.profiles.name} ${item.profiles.last_name}`,
+      authorNumber: `${item.created_by}`,
+      image: item.picture_url ? (this.supabase.storage.from('post-images').getPublicUrl(item.picture_url)).data.publicUrl : "",
+      comments: []
+    }));
+
+    if (posts.length > 0) {
+      return posts;
+    }
+    return [];
   }
 }

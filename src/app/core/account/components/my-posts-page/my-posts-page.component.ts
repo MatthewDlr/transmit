@@ -37,7 +37,8 @@ export class MyPostsPageComponent {
   async fetchPosts(): Promise<void> {
     if (this.user !== undefined) {
       try {
-        this.allPosts = await this.postService.getPostList();
+        // @ts-ignore
+        this.allPosts = await this.postService.getMyPosts();
         this.allPosts.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
         this.myPostsWithImages = this.allPosts.filter(
           post => post.authorNumber === this.user.id && post.image !== ''
