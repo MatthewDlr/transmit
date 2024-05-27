@@ -24,7 +24,8 @@ Run `pnpm dev` for a dev server ; then, navigate to `http://localhost:4200/`. Th
 
 #### Recommended posts
 
-@MeowChan27
+Posts are ranked based on User behaviour, User friendship, User tags and date.
+For more information : download the [algorithm_explanation.pdf](algorithm_explanation.pdf).
 
 #### Post new content
 
@@ -55,9 +56,10 @@ The algorithm may query all users in the database if they are all linked by at l
 #### Side Peek
 The side peek view is a panel that displays the last user we clicked on. A request is made to get user data based on its id and then displayed in a friendly way. However, the number of followers displayed is not accurate. It is relative to the current depth of the graph. For instance, if the graph is set with a depth of 1, we only have our friends, so our number of followers is zero. But the bigger the depth becomes, the more accurate the number of followers is.
 
-#### Recommendation engine
+#### Recommendation users
 
-@MeowChan27
+The user recommendation is done using 2 methods : recommendation based on tags and based on friends of friends.
+For more information : download the [algorithm_explanation.pdf](algorithm_explanation.pdf).
 
 ### Account Control
 
