@@ -27,16 +27,25 @@ export class PostListService {
     });
   }
 
-  private dfsHelper(hashMapUserIndex: Map<string, number>,indexWrapper: { value: number }, userId: string, depth: number, visited: Set<string>, hashMapUserIdDepth: Map<string, number>): void {
-    visited.add(userId);
-    const friendsId = this.foafService.getFriendsIDsOf(userId);
+  private bfsHelper(hashMapUserIndex: Map<string, number>, indexWrapper: { value: number }, userId: string, depth: number, hashMapUserIdDepth: Map<string, number>): void {
+    const queue: Array<{ id: string, depth: number }> = [];
+    const visited: Set<string> = new Set();
 
-    for (const friendId of friendsId) {
-      if (!visited.has(friendId)) {
-        hashMapUserIndex.set(friendId, indexWrapper.value);
-        indexWrapper.value += 1;
-        hashMapUserIdDepth.set(friendId, depth);
-        this.dfsHelper(hashMapUserIndex, indexWrapper, friendId, depth + 1, visited, hashMapUserIdDepth);
+    queue.push({ id: userId, depth: depth });
+    visited.add(userId);
+
+    while (queue.length > 0) {
+      const { id, depth } = queue.shift()!;
+      const friendsId = this.foafService.getFriendsIDsOf(id);
+
+      for (const friendId of friendsId) {
+        if (!visited.has(friendId)) {
+          visited.add(friendId);
+          hashMapUserIndex.set(friendId, indexWrapper.value);
+          indexWrapper.value += 1;
+          hashMapUserIdDepth.set(friendId, depth + 1);
+          queue.push({ id: friendId, depth: depth + 1 });
+        }
       }
     }
   }
@@ -88,8 +97,7 @@ export class PostListService {
     const indexWrapper = { value: 0 };
 
     const fillHashMapUserIdDepth = (indexWrapper: { value: number }, userId: string): void => {
-      const visited: Set<string> = new Set<string>();
-      this.dfsHelper(hashMapUserIndex, indexWrapper, userId, 1, visited, hashMapUserIdDepth);
+      this.bfsHelper(hashMapUserIndex, indexWrapper, userId, 1, hashMapUserIdDepth);
     }
 
     fillHashMapUserIdDepth(indexWrapper, this.userService.getUserID());

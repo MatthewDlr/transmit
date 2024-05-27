@@ -3,7 +3,6 @@ import { UserProfile } from "../../../../shared/types/Profile.type";
 import { FoafService } from "../foaf/foaf.service";
 import { UserProfileService } from "../../../../shared/services/user-profile/user-profile.service";
 import { UserSuggestion } from "../../types/UserSuggestion.interface";
-import {Interest} from "../../../../shared/types/Interest.type";
 
 @Injectable({
   providedIn: "root",
@@ -77,7 +76,6 @@ export class SuggestionsService {
   }
 
   public async addSuggestionByTags(myUser: UserProfile, limit: number) {
-    // console.log(this.users());
 
     function getUserProfile(suggestion: UserSuggestion): UserProfile {
       // Destructure the UserProfile properties from the suggestion object
@@ -94,20 +92,11 @@ export class SuggestionsService {
       return profiles;
     };
 
-    const myInterestSet: Set<Interest> = new Set(await this.userService.getMyInterests());
-    const myInterestSetString: Set<string> = new Set();
-    for (const userTag of myInterestSet) {
-      if (userTag.followed){
-        myInterestSetString.add(userTag.name);
-      }
-    }
+    const myInterestString: string[] = (await this.userService.getMyInterests()).filter(interest => interest.followed).map(interest => interest.name);
 
-    if (myInterestSetString.size != 0){
-      const directFriendsId: Set<string> = new Set(this.foafService.getFriendsIDsOf(myUser.id));
-      const directFriends: Set<UserProfile> = new Set();
-      for (const directFriendId of directFriendsId) {
-        directFriends.add(await this.foafService.getProfileOf(directFriendId));
-      }
+    if (myInterestString.length != 0){
+      const directFriends: Set<UserProfile> = new Set(await Promise.all([...new Set
+      (this.foafService.getFriendsIDsOf(myUser.id))].map(id => this.foafService.getProfileOf(id))));
 
       const usersProfiles: Set<UserProfile> = getUserProfilesFromSuggestions(this.users());
       const doNotRecommend: Set<UserProfile> = new Set([...usersProfiles, ...directFriends, myUser]);
@@ -118,20 +107,16 @@ export class SuggestionsService {
         for (const user of allUsers) {
           if (user && user.name){
             if (![...doNotRecommend].some((profile: UserProfile) => profile.id === user.id)) {
-              const userTagsSet: Set<Interest> = new Set<Interest>(await this.userService.getInterestsOf(user.id));
-              const userTagsSetString: Set<string> = new Set<string>();
-              for (const userTag of userTagsSet) {
-                if (userTag.followed){
-                  userTagsSetString.add(userTag.name);
-                }
-              }
+
+              const userTagString: string[] = (await this.userService.getInterestsOf(user.id)).filter(interest => interest.followed).map(interest => interest.name);
+
               let commonCount = 0;
-              myInterestSetString.forEach(value => {
-                if (userTagsSetString.has(value)) {
+              myInterestString.forEach(tag => {
+                if (userTagString.includes(tag)) {
                   commonCount++;
                 }
               });
-              let totalCount = myInterestSetString.size + userTagsSetString.size;
+              let totalCount = myInterestString.length + userTagString.length;
               hashMapOfInterests.set(user, commonCount/(totalCount - commonCount));
             }
           }
