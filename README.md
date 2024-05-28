@@ -46,11 +46,11 @@ As writing a "i love this content" comment for each post you like is not the bes
 The force graph is the component displaying the kinship between you and your followers. Each people is represented by a node; the lighter the node is, the further this person is from you.
 The graph displayed is powered by the [d3 library](https://d3js.org/) ; we chose to use the [force graph](https://observablehq.com/@d3/disjoint-force-directed-graph/2?intent=fork) because it's perfect to represent a network with nodes and directed links. The `force-graph` component is solely used for rendering and is not doing any logic ; it's all within the `foaf-service`.
 
-**Algorithm**
+**Algorithm** <br>
 The algorithm is an simple implementation of Breadth First Search (BFS).
 We start by adding the user connected (UC) to the queue and then iterating through it. For each user in the queue, we fetch their friends and add them inside. To avoid infinite loops, we keep track of fetched users and do not add them to the queue if we have already fetched their friends.
 
-**Data Structure**
+**Data Structure** <br>
 To store the relationship between people, we chose an adjacency list due to its numerous advantages.
  - Perfectly suited to represent directional & unweighted graph
  - Enables fast lookup to retrieve friends of someone
@@ -58,12 +58,16 @@ To store the relationship between people, we chose an adjacency list due to its 
 
 When someone is fetched, their name is added to the adjacency list as a key, and all their friends are associated as the value.
 
-**Depth Control**
-If we complete the BFS entirely, it will result in fetching all the network in local, which is very time-consuming and not private at all. Therefore, to keep track of the depth of each user, we employ the following algorithm: when we initiate the first iteration of the loop with the user connected, we add it to the adjacency list with an attribute called "depth" initialized at 0. Consequently, all individuals fetched have a depth equal to their friend's depth, plus 1, stored in the adjacency list. With this system, we can specify a maximum depth as an argument and exclude friends of a user that exceed the maximum depth, resulting in a stack dwindling to nothing. 
+**Depth Control** <br>
+If we complete the BFS entirely, it will result in fetching all the network in local, which is very time-consuming and not private at all. 
+
+Therefore, to keep track of the depth of each user, we employ the following algorithm: when we initiate the first iteration of the loop with the user connected, we add it to the adjacency list with an attribute called "depth" initialized at 0. Consequently, all individuals fetched have a depth equal to their friend's depth, plus 1, stored in the adjacency list. 
+
+With this system, we can specify a maximum depth as an argument and exclude friends of a user that exceed the maximum depth, resulting in a stack dwindling to nothing. 
 
 The default depth for network visualization is 2 and the maximum is 5 limiting network visibility and keeping the graph view decluttered. However, friends and post recommendation features can search beyond this limit.
 
-**Complexity**
+**Complexity** <br>
 Thanks to our depth control feature, a user is virtually placed in a sub-network of depth 5, making it finite. Therefore, the complexity of our system depends on the number of users within that sub-network and the number of relationships they have.
 
 The time complexity of our BFS algorithm is *O(U + L)* with *N* the number of users and *R* the number of links.
